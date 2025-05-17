@@ -18,7 +18,7 @@ const Navbar = () => {
   const toggleMenu = () => setIsOpen(!isOpen);
 
   return (
-    <nav className=" bg-black/40  text-black-700 bg-opacity-0 font-inter p-4 pb-2 ">
+    <nav className=" bg-black/40  text-black-700 bg-opacity-0 font-inter p-4 pb-2 text-lg">
       <div className="flex justify-between">
         <div className="text-2xl font-bold"> OGGCloud</div>
         <div className="md:hidden cursor-pointer" onClick={toggleMenu}>
@@ -38,7 +38,6 @@ const Navbar = () => {
 
           <li> Progress</li>
           <li> <Link to={"/log-workout"} >Log Workout</Link> </li>
-          <li> Change Account</li>
           <li> Sign out</li>
         </ul>
       </div>

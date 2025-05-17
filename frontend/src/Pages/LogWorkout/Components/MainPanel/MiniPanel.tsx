@@ -4,13 +4,14 @@ export default function MiniPanel({
   color,
   placeholderText,
   ref,
-  contentEditable = true
+  contentEditable = true,
+  numeric = false,
 }: {
-
   color: string;
   placeholderText: string;
   ref?: RefObject<HTMLDivElement>;
-  contentEditable?: boolean 
+  contentEditable?: boolean;
+  numeric?: boolean;
 }) {
   return (
     <div
@@ -18,6 +19,8 @@ export default function MiniPanel({
       contentEditable={contentEditable}
       suppressContentEditableWarning
       ref={ref}
+      inputMode={numeric ? "numeric" : "text"}
+      
     >
       {" "}
       {placeholderText}{" "}
