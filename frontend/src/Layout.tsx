@@ -20,7 +20,7 @@ const Navbar = () => {
   return (
     <nav className=" bg-black/40  text-black-700 bg-opacity-0 font-inter p-4 pb-2 ">
       <div className="flex justify-between">
-        <div className="text-2xl font-bold"> OGGLabs</div>
+        <div className="text-2xl font-bold"> OGGCloud</div>
         <div className="md:hidden cursor-pointer" onClick={toggleMenu}>
           {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </div>

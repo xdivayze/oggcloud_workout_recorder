@@ -1,19 +1,18 @@
 import type { RefObject } from "react";
 
 export default function MiniPanel({
-  height: width,
   color,
   placeholderText,
   ref,
 }: {
-  height: number;
+
   color: string;
   placeholderText: string;
-  ref: RefObject<HTMLDivElement>;
+  ref: RefObject<HTMLDivElement> | null;
 }) {
   return (
     <div
-      className={`min-w-[${width}] h-11 ${color} rounded-lg font-inter font-light `}
+      className={`h-full w-full ${color} rounded-lg font-inter font-light px-2 pb-1 text-2xl items-center justify-center flex`}
       contentEditable
       suppressContentEditableWarning
       ref={ref}
