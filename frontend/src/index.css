@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto+Slab:wght@100..900&display=swap');
+
+@theme {
+  --color-green-ogg-1: #1f2317;
+  
+  --color-blue-ogg-0: #64A6BD;
+
+  --color-gray-ogg-0: #B8B8B8;
+  --color-gray-ogg-1: #D8D7D7;
+  /*fonts*/
+
+  --font-roboto_slab: "Roboto Slab", serif;
+  --font-inter: "Inter", sans-serif;
+}
