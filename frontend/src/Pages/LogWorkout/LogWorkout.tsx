@@ -1,4 +1,4 @@
-import MainPanel from "./Components/MainPanel";
+import MainPanel from "./Components/MainPanel/MainPanel";
 
 export default function LogWorkout() {
   return (
