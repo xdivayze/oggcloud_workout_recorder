@@ -47,7 +47,7 @@ export default function MiniPanel({
               count += 1
               return(
               <div
-              className={`${count % 2 == 0 ? "bg-gray-ogg-1" : "bg-gray-ogg-2"} `}
+              className={`${count % 2 == 0 ? "bg-gray-ogg-1" : "bg-gray-ogg-2"}`}
                 key={item}
                 onClick={() => {
                   setSelected(item);

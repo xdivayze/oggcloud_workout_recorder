@@ -17,16 +17,15 @@ export default function MainPanel() {
   const [partialSums, setPartialSums] = useState<ReactNode[]>([]);
   return (
     <div className=" overflow-y-auto h-full w-full rounded-3xl bg-gray-ogg-1 p-5 flex items-center flex-col shadow-2xl">
-      <div className="min-h-14 w-full mb-4">
+      <div className="min-h-14 w-full mb-4 cursor-pointer ">
         <MiniPanel
           placeholderText="Choose Exercise"
           ref={exerciseChooseDivRef}
           contentEditable={false}
-          color="bg-gray-ogg-2"
+          color="bg-gray-ogg-2 shadow-black/30 shadow-sm"
           dropdownFeatures={{
             items: ["hi", "george"],
             onSelect(item) {
-              console.log(item);
             },
           }}
         />
