@@ -3,12 +3,19 @@
 
 @theme {
   --color-green-ogg-1: #1f2317;
+
+  --color-petrol-green: #2B454E;
   
   --color-blue-ogg-0: #64A6BD;
 
   --color-gray-ogg-0: #B8B8B8;
   --color-gray-ogg-1: #D8D7D7;
   --color-gray-ogg-2: #BFBFBF;
+
+  --color-indigo-ogg-0: #ADABC9;
+  --color-indigo-ogg-1: #827FBB;
+
+  
 
   --color-blue-ogg-0: #2B279E;
   /*fonts*/

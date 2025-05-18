@@ -1,4 +1,6 @@
-import { useContext, type ReactNode } from "react";
+import {
+  useContext,
+} from "react";
 import SetPartialSummary from "./SetPartialSummary";
 import {
   MainPanelRefContext,
@@ -6,7 +8,7 @@ import {
 } from "../MainPanelWrapper";
 import type { Unit } from "../../../../Tools/constants";
 
-export default function GeneratePartialSummary(): ReactNode {
+export function GeneratePartialSummary() {
   const {
     exerciseChooseDivRef,
     setNumberDivRef,
@@ -17,10 +19,11 @@ export default function GeneratePartialSummary(): ReactNode {
 
   return (
     <SetPartialSummary
-      repCount={repCountRef.current.innerHTML.replace(" ", "")}
+      repCount={repCountRef.current.innerHTML.trim()}
       weight={Number(repWeightRef.current.innerHTML.trim())}
       unit={weightUnitRef.current.innerHTML.trim() as Unit}
       exerciseName={exerciseChooseDivRef.current.innerHTML.trim()}
     />
   );
 }
+

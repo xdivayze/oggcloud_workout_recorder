@@ -12,7 +12,7 @@ export default function SetPartialSummary({
   exerciseName: string;
 }) {
   return (
-    <div className="w-full h-full rounded-xl font-inter font-light text-black bg-gray-ogg-2">
+    <div className="w-full h-full rounded-3xl text-xl font-inter font-extralight text-black bg-indigo-ogg-0 flex justify-center items-center p-2">
       {`${exerciseName} ${repCount}x @ ${weight}${unit}`}
     </div>
   );

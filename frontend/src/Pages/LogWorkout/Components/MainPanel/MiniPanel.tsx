@@ -15,7 +15,7 @@ export default function MiniPanel({
 }) {
   return (
     <div
-      className={`h-full w-full ${color} rounded-xl font-inter font-light px-2 pb-1 text-2xl items-center justify-center flex`}
+      className={`h-full w-full ${color} rounded-2xl font-inter font-light px-2 pb-1 text-2xl items-center justify-center flex`}
       contentEditable={contentEditable}
       suppressContentEditableWarning
       ref={ref}
@@ -27,3 +27,4 @@ export default function MiniPanel({
     </div>
   );
 }
+ 
