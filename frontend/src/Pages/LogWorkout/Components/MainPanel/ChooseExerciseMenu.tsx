@@ -1,42 +1,43 @@
-import { useState, type RefObject } from "react";
+import { useContext, useEffect, useState } from "react";
+import { MainPanelRefContext } from "../MainPanelWrapper";
 
-interface IDropdownFeatures {
-  items: string[];
-  onSelect: (item: string) => void;
-}
+const CUSTOM_WORKOUT_MENU_ITEM = "Enter Custom Workout";
 
-export default function MiniPanel({
-  color,
-  placeholderText,
-  ref,
-  contentEditable = true,
-  numeric = false,
-  dropdownFeatures,
-}: {
-  color: string;
-  placeholderText: string;
-  ref?: RefObject<HTMLDivElement>;
-  contentEditable?: boolean;
-  numeric?: boolean;
-  dropdownFeatures?: IDropdownFeatures;
-}) {
+export default function ChooseExerciseMenu() {
+  const exerciseChooseDivRef =
+    useContext(MainPanelRefContext)?.exerciseChooseDivRef;
   const [selected, setSelected] = useState("");
+  const [contentEditable, setContentEditable] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+
+  const onSelect = (item: string) => {
+    if (item.trim() === CUSTOM_WORKOUT_MENU_ITEM) {
+      setContentEditable(true);
+    }
+  };
+
+  useEffect(() => {
+    if ( exerciseChooseDivRef?.current) {
+        exerciseChooseDivRef.current.innerText = "Enter Workout"
+        exerciseChooseDivRef.current.focus()
+    }
+  }, [contentEditable])
+
+  const items = ["Fetched Ex-Logged Workouts", CUSTOM_WORKOUT_MENU_ITEM];
   let count = 0;
+  const placeholderText = "Choose Exercise";
   return (
     <div className="h-full w-full relative inline-block">
       <div
-        className={`h-full w-full ${color} rounded-2xl font-inter 
+        className={`h-full w-full bg-gray-ogg-2 shadow-black/30 shadow-sm rounded-2xl font-inter 
         font-light px-2 pb-1 text-2xl items-center justify-center flex`}
         contentEditable={contentEditable}
         suppressContentEditableWarning
-        ref={ref}
-        inputMode={numeric ? "numeric" : "text"}
+        onBlur={() => setContentEditable(false)}
+        ref={exerciseChooseDivRef}
         onClick={(e) => {
-          if (dropdownFeatures !== undefined) {
-            e.preventDefault();
-            setIsOpen(!isOpen);
-          }
+          e.preventDefault();
+          setIsOpen(!isOpen);
         }}
       >
         {selected !== "" ? selected : placeholderText}
@@ -49,7 +50,7 @@ export default function MiniPanel({
         shadow-lg font-inter font-light bg-gray-ogg-2 border border-gray-300  `}
       >
         <div className=" w-full flex flex-col ">
-          {dropdownFeatures?.items.map((item) => {
+          {items.map((item) => {
             count += 1;
             return (
               <div
@@ -60,7 +61,7 @@ export default function MiniPanel({
                 onClick={() => {
                   setSelected(item);
                   setIsOpen(false);
-                  dropdownFeatures.onSelect(item);
+                  onSelect(item);
                 }}
               >
                 <span className="p-1">{item}</span>

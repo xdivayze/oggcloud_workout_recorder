@@ -5,6 +5,7 @@ import {
   type MainPanelRefContextType,
 } from "../MainPanelWrapper";
 import { GeneratePartialSummary } from "./Service";
+import ChooseExerciseMenu from "./ChooseExerciseMenu";
 
 export default function MainPanel() {
   const {
@@ -18,17 +19,7 @@ export default function MainPanel() {
   return (
     <div className=" overflow-y-auto h-full w-full rounded-3xl bg-gray-ogg-1 p-5 flex items-center flex-col shadow-2xl">
       <div className="min-h-14 w-full mb-4 cursor-pointer ">
-        <MiniPanel
-          placeholderText="Choose Exercise"
-          ref={exerciseChooseDivRef}
-          contentEditable={false}
-          color="bg-gray-ogg-2 shadow-black/30 shadow-sm"
-          dropdownFeatures={{
-            items: ["hi", "george"],
-            onSelect(item) {
-            },
-          }}
-        />
+        <ChooseExerciseMenu />
       </div>
       <div className="flex-row justify-between items-center pl-1 flex w-full font-inter font-light text-2xl mb-4 ">
         <div> Current Set</div>
@@ -62,11 +53,18 @@ export default function MainPanel() {
             color="bg-gray-ogg-2"
           />
         </div>
-        <div className="min-h-11 w-1/6  ">
+        <div className="min-h-11 w-1/6 cursor-pointer  ">
           <MiniPanel
             ref={weightUnitRef}
             placeholderText="kg"
             color="bg-gray-ogg-2"
+            contentEditable={false}
+            dropdownFeatures={{
+              items: ["kg", "lb"],
+              onSelect(item) {
+                weightUnitRef.current.innerText = item;
+              },
+            }}
           />
         </div>
         <div className="min-h-11 w-1/6">
