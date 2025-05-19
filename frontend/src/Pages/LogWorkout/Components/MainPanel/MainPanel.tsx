@@ -25,6 +25,7 @@ export default function MainPanel() {
         <div> Current Set</div>
         <div className="h-11 w-1/6">
           <MiniPanel
+          contentEditable={true}
             color="bg-gray-ogg-2"
             ref={setNumberDivRef}
             placeholderText="0"

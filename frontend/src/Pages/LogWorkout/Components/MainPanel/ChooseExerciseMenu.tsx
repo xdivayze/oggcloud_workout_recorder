@@ -45,8 +45,8 @@ export default function ChooseExerciseMenu() {
 
       <div
         className={`${
-          isOpen ? "opacity-100 translate-y-0 " : "opacity-0 translate-y-2"
-        } transition-all delay-25 ease-in-out w-full absolute z-10 rounded-xl 
+          isOpen ? "opacity-100 translate-y-0 z-10" : "opacity-0 translate-y-2 z-[-10]"
+        } transition-all delay-25 ease-in-out w-full absolute  rounded-xl 
         shadow-lg font-inter font-light bg-gray-ogg-2 border border-gray-300  `}
       >
         <div className=" w-full flex flex-col ">
