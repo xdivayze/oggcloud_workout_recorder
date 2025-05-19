@@ -12,16 +12,18 @@ export default function ChooseExerciseMenu() {
 
   const onSelect = (item: string) => {
     if (item.trim() === CUSTOM_WORKOUT_MENU_ITEM) {
+      if (exerciseChooseDivRef?.current) {
+        exerciseChooseDivRef.current.innerText = "Enter Workout";
+      }
       setContentEditable(true);
     }
   };
 
   useEffect(() => {
-    if ( exerciseChooseDivRef?.current) {
-        exerciseChooseDivRef.current.innerText = "Enter Workout"
-        exerciseChooseDivRef.current.focus()
+    if (exerciseChooseDivRef?.current) {
+      exerciseChooseDivRef.current.focus();
     }
-  }, [contentEditable])
+  }, [contentEditable]);
 
   const items = ["Fetched Ex-Logged Workouts", CUSTOM_WORKOUT_MENU_ITEM];
   let count = 0;
@@ -45,7 +47,9 @@ export default function ChooseExerciseMenu() {
 
       <div
         className={`${
-          isOpen ? "opacity-100 translate-y-0 z-10" : "opacity-0 translate-y-2 z-[-10]"
+          isOpen
+            ? "opacity-100 translate-y-0 z-10"
+            : "opacity-0 translate-y-2 z-[-10]"
         } transition-all delay-25 ease-in-out w-full absolute  rounded-xl 
         shadow-lg font-inter font-light bg-gray-ogg-2 border border-gray-300  `}
       >
