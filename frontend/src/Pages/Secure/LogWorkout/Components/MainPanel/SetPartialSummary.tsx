@@ -1,4 +1,4 @@
-import type { Unit } from "../../../../Tools/constants";
+import type { Unit } from "../../../../../Tools/constants";
 import { X } from "lucide-react";
 
 export default function SetPartialSummary({

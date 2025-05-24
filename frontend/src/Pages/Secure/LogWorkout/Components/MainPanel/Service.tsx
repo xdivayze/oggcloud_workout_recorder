@@ -6,7 +6,7 @@ import {
   MainPanelRefContext,
   type MainPanelRefContextType,
 } from "../MainPanelWrapper";
-import type { Unit } from "../../../../Tools/constants";
+import type { Unit } from "../../../../../Tools/constants";
 
 export function GeneratePartialSummary() {
   const {
