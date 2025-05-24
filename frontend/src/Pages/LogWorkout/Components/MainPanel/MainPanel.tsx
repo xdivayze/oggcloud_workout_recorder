@@ -15,7 +15,9 @@ export default function MainPanel() {
     weightUnitRef,
     repCountRef,
   } = useContext(MainPanelRefContext) as MainPanelRefContextType;
-  const [partialSums, setPartialSums] = useState<ReactNode[]>([]);
+  const [partialSums, setPartialSums] = useState<Map<string, ReactNode>>(
+    new Map()
+  );
   return (
     <div className=" overflow-y-auto h-full w-full rounded-3xl bg-gray-ogg-1 p-5 flex items-center flex-col shadow-2xl">
       <div className="min-h-14 w-full mb-4 cursor-pointer ">
@@ -25,7 +27,7 @@ export default function MainPanel() {
         <div> Current Set</div>
         <div className="h-11 w-1/6">
           <MiniPanel
-          contentEditable={true}
+            contentEditable={true}
             color="bg-gray-ogg-2"
             ref={setNumberDivRef}
             placeholderText="0"
@@ -37,7 +39,12 @@ export default function MainPanel() {
           onClick={(e) => {
             e.preventDefault();
             const psum = <GeneratePartialSummary />;
-            setPartialSums((prev) => [...prev, psum]);
+            setPartialSums((prev) => {
+              const newMap = new Map(prev);
+
+              newMap.set(Math.floor(Math.random() * 10 + 1).toString(), psum);
+              return newMap;
+            });
           }}
           className="min-h-11 w-1/3 text-white cursor-pointer"
         >
@@ -77,10 +84,20 @@ export default function MainPanel() {
         </div>
       </div>
       <div className="flex flex-col w-full mt-7">
-        {partialSums.map((v, i) => (
-          <div key={i} className="h-[70px] w-full mb-3">
+        {[...partialSums.entries()].map(([k, c]) => (
+          <div
+            key={k}
+            onClick={() => {
+              setPartialSums((prev) => {
+                const newMap = new Map(prev);
+                newMap.delete(k);
+                return newMap;
+              });
+            }}
+            className="h-[70px] w-full mb-3"
+          >
             {" "}
-            {v}{" "}
+            {c}{" "}
           </div>
         ))}
       </div>

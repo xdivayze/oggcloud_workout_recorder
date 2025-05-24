@@ -24,7 +24,7 @@ export default function ChooseExerciseMenu() {
       exerciseChooseDivRef.current.focus();
     }
   }, [contentEditable]);
-
+  
   const items = ["Fetched Ex-Logged Workouts", CUSTOM_WORKOUT_MENU_ITEM];
   let count = 0;
   const placeholderText = "Choose Exercise";
