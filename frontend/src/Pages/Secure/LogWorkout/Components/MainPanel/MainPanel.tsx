@@ -19,7 +19,8 @@ export default function MainPanel() {
     new Map()
   );
   return (
-    <div className=" overflow-y-auto h-full w-full rounded-3xl bg-gray-ogg-1 p-5 flex items-center flex-col shadow-2xl">
+    <div className=" overflow-y-auto h-full w-full rounded-3xl
+     bg-gray-ogg-1 p-5 flex items-center flex-col shadow-2xl">
       <div className="min-h-14 w-full mb-4 cursor-pointer ">
         <ChooseExerciseMenu />
       </div>
