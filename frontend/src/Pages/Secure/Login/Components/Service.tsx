@@ -9,6 +9,7 @@ async function doLoginImpl(id: string, password: string) {
     [REQUEST_FIELDNAMES.PASSWORD]: hashedPassword,
   });
 
+
   const resp = await fetch("/api/user/login", {
     method: "POST",
     headers: {
