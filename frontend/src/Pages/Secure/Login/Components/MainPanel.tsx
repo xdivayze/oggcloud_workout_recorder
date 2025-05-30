@@ -1,6 +1,6 @@
 import { useRef, type RefObject } from "react";
 import MiniPanel from "../../LogWorkout/Components/MainPanel/MiniPanel";
-import { doLogin } from "./Service";
+import { DoLogin } from "./Service";
 
 export default function MainPanel() {
   const idRef = useRef<HTMLDivElement>(null) as RefObject<HTMLDivElement>;
@@ -18,7 +18,7 @@ export default function MainPanel() {
       </div>
       <div className="w-full h-15 mt-[24px]">
         <MiniPanel
-        ref={idRef}
+          ref={idRef}
           placeholderText="enter your identifier"
           color="bg-gray-ogg-2"
           contentEditable={true}
@@ -26,7 +26,7 @@ export default function MainPanel() {
       </div>
       <div className="w-full h-15 mt-4">
         <MiniPanel
-        ref={passwordRef}
+          ref={passwordRef}
           placeholderText="enter your password"
           color="bg-gray-ogg-2"
           contentEditable={true}
@@ -34,9 +34,13 @@ export default function MainPanel() {
       </div>
       <div
         className="w-full h-15 mt-[50px]"
-        onClick={() =>
-          doLogin(idRef.current.innerText, passwordRef.current.innerText)
-        }
+        onClick={() => {
+          //!func comp not being called
+          <DoLogin 
+            id={idRef.current.innerText}
+            password={passwordRef.current.innerText}
+          />;
+        }}
       >
         <MiniPanel
           placeholderText="Continue"

@@ -1,5 +1,7 @@
 import { createHash } from "crypto";
 import { REQUEST_FIELDNAMES } from "../../../../Tools/constants";
+import { authContext } from "../../SecurityContext";
+import { useContext } from "react";
 
 async function doLoginImpl(id: string, password: string) {
   const hashedPassword = createHash("sha256").update(password).digest("hex");
@@ -8,7 +10,6 @@ async function doLoginImpl(id: string, password: string) {
     [REQUEST_FIELDNAMES.ID]: id,
     [REQUEST_FIELDNAMES.PASSWORD]: hashedPassword,
   });
-
 
   const resp = await fetch("/api/user/login", {
     method: "POST",
@@ -35,16 +36,38 @@ async function doLoginImpl(id: string, password: string) {
     );
   }
 
-  return [
-    respBody[REQUEST_FIELDNAMES.AUTH_CODE],
-    respBody[REQUEST_FIELDNAMES.EXPIRES_AT],
-  ];
+  return {
+    [REQUEST_FIELDNAMES.AUTH_CODE]: respBody[
+      REQUEST_FIELDNAMES.AUTH_CODE
+    ] as string,
+    [REQUEST_FIELDNAMES.EXPIRES_AT]: respBody[
+      REQUEST_FIELDNAMES.EXPIRES_AT
+    ] as Date,
+  };
 }
 
-export async function doLogin(id: string, password: string) {
+export function DoLogin({id, password}: { id: string, password: string}) {
   doLoginImpl(id, password)
-    .catch((e: Error) => console.error(e))
+    .catch((e: Error) => {
+      if (e) {
+        console.error(e)
+        throw e;
+      }
+    })
     .then((val) => {
       console.log(val);
+      const context = useContext(authContext);
+      if (!context) {
+        throw "function is not within a context provider";
+      }
+      if (!val) {
+        throw "val does not exist";
+      }
+      context.login(
+        val[REQUEST_FIELDNAMES.AUTH_CODE],
+        val[REQUEST_FIELDNAMES.EXPIRES_AT]
+      );
+      console.log(context.authCode);
     });
+  return <></>;
 }
