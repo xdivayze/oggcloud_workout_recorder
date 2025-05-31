@@ -3,7 +3,7 @@ import { REQUEST_FIELDNAMES } from "../../../../Tools/constants";
 import { authContext } from "../../SecurityContext";
 import { useContext } from "react";
 
-async function doLoginImpl(id: string, password: string) {
+export async function DoLogin(id: string, password: string) {
   const hashedPassword = createHash("sha256").update(password).digest("hex");
 
   const body = JSON.stringify({
@@ -44,30 +44,4 @@ async function doLoginImpl(id: string, password: string) {
       REQUEST_FIELDNAMES.EXPIRES_AT
     ] as Date,
   };
-}
-
-export function DoLogin({id, password}: { id: string, password: string}) {
-  doLoginImpl(id, password)
-    .catch((e: Error) => {
-      if (e) {
-        console.error(e)
-        throw e;
-      }
-    })
-    .then((val) => {
-      console.log(val);
-      const context = useContext(authContext);
-      if (!context) {
-        throw "function is not within a context provider";
-      }
-      if (!val) {
-        throw "val does not exist";
-      }
-      context.login(
-        val[REQUEST_FIELDNAMES.AUTH_CODE],
-        val[REQUEST_FIELDNAMES.EXPIRES_AT]
-      );
-      console.log(context.authCode);
-    });
-  return <></>;
 }

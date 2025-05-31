@@ -1,10 +1,12 @@
-import { useRef, type RefObject } from "react";
+import { useContext, useEffect, useRef, type RefObject } from "react";
 import MiniPanel from "../../LogWorkout/Components/MainPanel/MiniPanel";
 import { DoLogin } from "./Service";
+import { authContext } from "../../SecurityContext";
 
 export default function MainPanel() {
   const idRef = useRef<HTMLDivElement>(null) as RefObject<HTMLDivElement>;
   const passwordRef = useRef<HTMLDivElement>(null) as RefObject<HTMLDivElement>;
+  const context = useContext(authContext);
   return (
     <div
       className=" overflow-y-auto h-full w-full rounded-3xl
@@ -35,11 +37,18 @@ export default function MainPanel() {
       <div
         className="w-full h-15 mt-[50px]"
         onClick={() => {
-          //!func comp not being called
-          <DoLogin 
-            id={idRef.current.innerText}
-            password={passwordRef.current.innerText}
-          />;
+          if (!context) {
+            throw "function is not within a context provider";
+          }
+          DoLogin(idRef.current.innerText, passwordRef.current.innerText)
+            .catch((e: Error) => {
+              console.error(e); //TODO add actual error handling here
+              return;
+            })
+            .then((val) => {
+              if (!val) throw "user auth code not returned";
+              context.login(val.authCode, val.expiresAt);
+            });
         }}
       >
         <MiniPanel
