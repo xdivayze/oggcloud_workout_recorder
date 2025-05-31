@@ -16,6 +16,12 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = () => setIsOpen(!isOpen);
+  const linkItems = [
+    ["Home", "/"],
+    ["Progress", "/progress"],
+    ["Log Workout", "/log-workout"],
+    ["Sign Out", "/sign-out"],
+  ];
 
   return (
     <nav className=" bg-black/40  text-black-700 bg-opacity-0 font-inter p-4 pb-2 text-lg">
@@ -32,13 +38,13 @@ const Navbar = () => {
               isOpen ? "opacity-100 max-h-40" : "opacity-0 max-h-0"
             }`}
         >
-          <li>
-            <Link to={"/"}>Home</Link>
-          </li>
-
-          <li> Progress</li>
-          <li> <Link to={"/log-workout"} >Log Workout</Link> </li>
-          <li> Sign out</li>
+          {linkItems.map((v, i) => {
+            return (
+              <li key={i} onClick={() => setIsOpen(false)}>
+                <Link to={v[1]}>{v[0]} </Link>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </nav>
