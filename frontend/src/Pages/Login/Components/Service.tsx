@@ -1,7 +1,5 @@
 import { createHash } from "crypto";
-import { REQUEST_FIELDNAMES } from "../../../../Tools/constants";
-import { authContext } from "../../SecurityContext";
-import { useContext } from "react";
+import  { REQUEST_FIELDNAMES } from "../../../Tools/constants";
 
 export async function DoLogin(id: string, password: string) {
   const hashedPassword = createHash("sha256").update(password).digest("hex");

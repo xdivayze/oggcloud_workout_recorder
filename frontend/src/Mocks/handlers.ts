@@ -1,4 +1,4 @@
-import { http, HttpResponse} from "msw";
+import { http, HttpResponse } from "msw";
 import { REQUEST_FIELDNAMES } from "../Tools/constants";
 
 interface ILogin {
@@ -20,7 +20,9 @@ export const handlers = [
     return HttpResponse.json(
       {
         [REQUEST_FIELDNAMES.AUTH_CODE]: "welcome_to_ogglabs",
-        [REQUEST_FIELDNAMES.EXPIRES_AT]: "1748542626",
+        [REQUEST_FIELDNAMES.EXPIRES_AT]: new Date(
+          new Date().getTime() + 30 * 60 * 1000
+        ),
       },
       { status: 200 }
     );

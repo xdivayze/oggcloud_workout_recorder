@@ -1,8 +1,9 @@
 import { useContext, useRef, useState, type RefObject } from "react";
-import MiniPanel from "../../LogWorkout/Components/MainPanel/MiniPanel";
+
 import { DoLogin } from "./Service";
-import { authContext } from "../../SecurityContext";
 import { useNavigate } from "react-router-dom";
+import { authContext } from "../../Secure/SecurityContext";
+import MiniPanel from "../../Secure/LogWorkout/Components/MainPanel/MiniPanel";
 
 export default function MainPanel() {
   const idRef = useRef<HTMLDivElement>(null) as RefObject<HTMLDivElement>;
