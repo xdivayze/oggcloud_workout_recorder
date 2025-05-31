@@ -16,7 +16,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = () => setIsOpen(!isOpen);
-  const linkItems = [
+  const navbarItems = [
     ["Home", "/"],
     ["Progress", "/progress"],
     ["Log Workout", "/log-workout"],
@@ -38,7 +38,7 @@ const Navbar = () => {
               isOpen ? "opacity-100 max-h-40" : "opacity-0 max-h-0"
             }`}
         >
-          {linkItems.map((v, i) => {
+          {navbarItems.map((v, i) => {
             return (
               <li key={i} onClick={() => setIsOpen(false)}>
                 <Link to={v[1]}>{v[0]} </Link>
