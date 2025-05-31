@@ -5,6 +5,7 @@ import LogWorkout from "./Pages/Secure/LogWorkout/LogWorkout";
 import SecurityContext from "./Pages/Secure/SecurityContext";
 import Login from "./Pages/Login/Login";
 import ProtectedWrapper from "./Pages/Secure/ProtectedWrapper";
+import SignOut from "./Pages/Secure/SignOut";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="" element={<ProtectedWrapper />}>
             <Route path="log-workout" element={<LogWorkout />} />
+            <Route path="sign-out" element={<SignOut />} />
           </Route>
         </Route>
       </Routes>
