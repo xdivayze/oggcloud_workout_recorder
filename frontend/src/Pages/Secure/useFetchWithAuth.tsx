@@ -1,1 +1,1 @@
-//TODO
+//TODO implement secure cookies for refreshing auth codes once the backend is running
