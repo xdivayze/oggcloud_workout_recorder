@@ -1,11 +1,12 @@
-import { useContext, useState, type ReactNode } from "react";
+import { useContext, useState } from "react";
 import MiniPanel from "./MiniPanel";
 import {
   MainPanelRefContext,
   type MainPanelRefContextType,
 } from "../MainPanelWrapper";
-import { GeneratePartialSummary } from "./Service";
 import ChooseExerciseMenu from "./ChooseExerciseMenu";
+import { PartialRepSchema, type PartialRepObjectType } from "./types";
+import SetPartialSummary from "./SetPartialSummary";
 
 export default function MainPanel() {
   const {
@@ -15,7 +16,7 @@ export default function MainPanel() {
     weightUnitRef,
     repCountRef,
   } = useContext(MainPanelRefContext) as MainPanelRefContextType;
-  const [partialSums, setPartialSums] = useState<Map<string, ReactNode>>(
+  const [partialSums, setPartialSums] = useState<Map<string, PartialRepObjectType >>( //TODO switch this with an object of data that will be mapped to react components
     new Map()
   );
   return (
@@ -39,11 +40,18 @@ export default function MainPanel() {
         <div
           onClick={(e) => {
             e.preventDefault();
-            const psum = <GeneratePartialSummary />;
+            const psumObj =  PartialRepSchema.parse( {
+              repCount: repCountRef.current.innerText.trim(),
+              setNo: setNumberDivRef.current.innerText.trim(),
+              weight: repWeightRef.current.innerText.trim(),
+              unit:weightUnitRef.current.innerText.trim(),
+              exerciseName: exerciseChooseDivRef.current.innerText.trim()
+
+            })
             setPartialSums((prev) => {
               const newMap = new Map(prev);
 
-              newMap.set(Math.floor(Math.random() * 10 + 1).toString(), psum);
+              newMap.set(Math.floor(Math.random() * 10 + 1).toString(), psumObj);
               return newMap;
             });
           }}
@@ -97,12 +105,14 @@ export default function MainPanel() {
             }}
             className="h-[70px] w-full mb-3"
           >
-            {" "}
-            {c}{" "}
+            <SetPartialSummary repCount={c.repCount} weight={c.weight} unit={c.unit} exerciseName={c.exerciseName}     />
           </div>
         ))}
       </div>
-      <div className="min-h-15 w-full mb-4 sticky text-white cursor-pointer bottom-0">
+      <div
+      onClick={() => {
+      }}
+      className="min-h-15 w-full mb-4 sticky text-white cursor-pointer bottom-0">
         <MiniPanel
           color="bg-blue-ogg-0 "
           contentEditable={false}

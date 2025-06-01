@@ -1,5 +1,5 @@
-import type { Unit } from "../../../../../Tools/constants";
 import { X } from "lucide-react";
+import type { ZUnitType } from "./types";
 
 export default function SetPartialSummary({
   repCount,
@@ -7,9 +7,9 @@ export default function SetPartialSummary({
   unit,
   exerciseName,
 }: {
-  repCount: string;
+  repCount: number;
   weight: number;
-  unit: Unit;
+  unit: ZUnitType;
   exerciseName: string;
 }) {
   return (
