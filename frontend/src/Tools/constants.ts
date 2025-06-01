@@ -1,11 +1,5 @@
 
 
-const Units = {
-    KG : "kg",
-    LB: "lb"
-
-} as const;
-
 const REQUEST_FIELDNAMES = {
     ID : "id",
     PASSWORD: "password",

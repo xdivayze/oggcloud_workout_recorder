@@ -7,8 +7,6 @@ interface ILogin {
   [REQUEST_FIELDNAMES.PASSWORD]: string;
 }
 
-
-
 export const handlers = [
   http.post("/api/user/login", async ({ request }) => {
     const data = (await request.json()) as ILogin;
@@ -33,27 +31,28 @@ export const handlers = [
     );
   }),
   http.post("/api/user/log-workout", async ({ request }) => {
-    const authCode = request.headers.get(REQUEST_FIELDNAMES.AUTH_CODE);
-    if (!authCode) {
-      return new HttpResponse({ status: 401 });
-    }
-    //validate auth from database
-    const expiresAt = request.headers.get(REQUEST_FIELDNAMES.EXPIRES_AT);
-    if (!expiresAt || new Date(Date.parse(expiresAt)) < new Date()) {
-      return new HttpResponse({ status: 401 });
+    const id = request.headers.get(REQUEST_FIELDNAMES.ID);
+    if (!id) {
+      return new HttpResponse(null,{ status: 401 });
     }
 
-    const data = await request.json();
+    const authCode = request.headers.get(REQUEST_FIELDNAMES.AUTH_CODE);
+    if (!authCode) {
+      return new HttpResponse(null,{ status: 401 });
+    }
+    //validate auth from database
+    //validate expiry from database
+
     try {
+      const data = await request.json();
       const partialRep = PartialRepArraySchema.parse(data);
       partialRep.partialSummaries.forEach((v) => {
         console.log(v);
       });
+      return new HttpResponse(null,{ status: 200 });
     } catch (e) {
       console.error(e);
-      return new HttpResponse({ status: 400 });
+      return new HttpResponse(null,{ status: 400 });
     }
-
-    return new HttpResponse({ status: 200 });
   }),
 ];

@@ -10,7 +10,7 @@ export default function MainPanel() {
   const passwordRef = useRef<HTMLDivElement>(null) as RefObject<HTMLDivElement>;
   const context = useContext(authContext);
   const [loginSuccess, setLoginSuccess] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   return (
     <div
       className=" overflow-y-auto h-full w-full rounded-3xl
@@ -47,18 +47,19 @@ export default function MainPanel() {
               if (!context) {
                 throw "function is not within a context provider";
               }
-              DoLogin(idRef.current.innerText, passwordRef.current.innerText)
+              const id = idRef.current.innerText;
+              DoLogin(id, passwordRef.current.innerText)
                 .catch((e: Error) => {
                   console.error(e); //TODO add actual error handling here
                   return;
                 })
                 .then((val) => {
                   if (!val) throw "user auth code not returned";
-                  context.login(val.authCode, val.expiresAt);
+                  context.login(val.authCode, val.expiresAt, id);
                   setLoginSuccess(true);
                   setTimeout(() => {
-                    navigate("/log-workout")
-                  }, 3000)
+                    navigate("/log-workout");
+                  }, 3000);
                 });
             }}
           >

@@ -5,10 +5,15 @@ import {
   type MainPanelRefContextType,
 } from "../MainPanelWrapper";
 import ChooseExerciseMenu from "./ChooseExerciseMenu";
-import { PartialRepSchema, type PartialRepObjectType } from "./types";
+import { PartialRepSchema, type PartialRepArrayType, type PartialRepObjectType } from "./types";
 import SetPartialSummary from "./SetPartialSummary";
+import { REQUEST_FIELDNAMES } from "../../../../../Tools/constants";
+import { authContext } from "../../../SecurityContext";
 
 export default function MainPanel() {
+
+  const importedAuthContext = useContext(authContext)
+
   const {
     exerciseChooseDivRef,
     setNumberDivRef,
@@ -41,9 +46,9 @@ export default function MainPanel() {
           onClick={(e) => {
             e.preventDefault();
             const psumObj =  PartialRepSchema.parse( {
-              repCount: repCountRef.current.innerText.trim(),
-              setNo: setNumberDivRef.current.innerText.trim(),
-              weight: repWeightRef.current.innerText.trim(),
+              repCount: Number(repCountRef.current.innerText.trim()),
+              setNo: Number(setNumberDivRef.current.innerText.trim()),
+              weight: Number(repWeightRef.current.innerText.trim()),
               unit:weightUnitRef.current.innerText.trim(),
               exerciseName: exerciseChooseDivRef.current.innerText.trim()
 
@@ -111,6 +116,25 @@ export default function MainPanel() {
       </div>
       <div
       onClick={() => {
+        const body: PartialRepArrayType = {
+          partialSummaries: [...partialSums.values()]
+        }
+        fetch("/api/user/log-workout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            [REQUEST_FIELDNAMES.AUTH_CODE]: importedAuthContext?.authCode as string,
+            [REQUEST_FIELDNAMES.ID] : importedAuthContext?.id as string
+          }, 
+          body: JSON.stringify(body)
+        }).catch((e:Error) => {throw e}  ).then((v) => {
+          if(!v.ok) {
+            throw "returned non-200 code: " + v.status
+          }
+          setPartialSums(new Map())
+        })
+
+        
       }}
       className="min-h-15 w-full mb-4 sticky text-white cursor-pointer bottom-0">
         <MiniPanel
