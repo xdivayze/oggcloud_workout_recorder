@@ -1,17 +1,21 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, type RefObject } from "react";
 import { MainPanelRefContext } from "../../MainPanelWrapper";
 
 const CUSTOM_WORKOUT_MENU_ITEM = "Enter Custom Workout";
 const CUSTOM_WORKOUT_MENU_ITEM_ONCLICK = "Enter Workout Name";
 const PLACEHOLDER_TEXT = "Choose Exercise";
 
+//TODO show best results from fetched exercises as it is being searched
+
 export default function ChooseExerciseMenu({
   includeCustomWorkout = true,
+  externalExerciseChooseDivRef 
 }: {
   includeCustomWorkout?: boolean;
+  externalExerciseChooseDivRef?: RefObject<HTMLDivElement>
 }) {
-  const exerciseChooseDivRef =
-    useContext(MainPanelRefContext)?.exerciseChooseDivRef;
+  let exerciseChooseDivRef = externalExerciseChooseDivRef ? externalExerciseChooseDivRef : useContext(MainPanelRefContext)?.exerciseChooseDivRef;
+    
   const [selected, setSelected] = useState("");
   const [contentEditable, setContentEditable] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -28,14 +32,16 @@ export default function ChooseExerciseMenu({
   };
 
   useEffect(() => {
+    console.log("hi")
     if (exerciseChooseDivRef?.current) {
       exerciseChooseDivRef.current.focus();
+      console.log("hi")
       if (
         !contentEditable && //if custom workout is selected but a custom workout isn't entered and div is blurred, fall back to default placeholder
         exerciseChooseDivRef.current.innerText.trim() ===
           CUSTOM_WORKOUT_MENU_ITEM_ONCLICK
       ) {
-        exerciseChooseDivRef.current.innerText = "Choose Exercise ";
+        setSelected(PLACEHOLDER_TEXT)
       }
     }
   }, [contentEditable]);

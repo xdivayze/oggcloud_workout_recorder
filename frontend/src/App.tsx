@@ -15,10 +15,11 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="login" element={<Login />} />
+          <Route path="progress" element={<Progress />} />
           <Route path="" element={<ProtectedWrapper />}>
             <Route path="log-workout" element={<LogWorkout />} />
             <Route path="sign-out" element={<SignOut />} />
-            <Route path="progress" element={<Progress />} />
+            
           </Route>
         </Route>
       </Routes>
