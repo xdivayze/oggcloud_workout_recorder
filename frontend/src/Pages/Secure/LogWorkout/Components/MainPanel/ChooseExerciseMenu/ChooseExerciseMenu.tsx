@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { MainPanelRefContext } from "../MainPanelWrapper";
+import { MainPanelRefContext } from "../../MainPanelWrapper";
 
 const CUSTOM_WORKOUT_MENU_ITEM = "Enter Custom Workout";
 const CUSTOM_WORKOUT_MENU_ITEM_ONCLICK = "Enter Workout Name";
@@ -18,11 +18,11 @@ export default function ChooseExerciseMenu({
 
   const onSelect = (item: string) => {
     let selectedItem = "";
-    if (item.trim() === CUSTOM_WORKOUT_MENU_ITEM) {
+    if (item.trim() === CUSTOM_WORKOUT_MENU_ITEM) { //set the placeholder text custom workout onclick item
       selectedItem = CUSTOM_WORKOUT_MENU_ITEM_ONCLICK;
       setContentEditable(true);
     } else {
-      selectedItem = item;
+      selectedItem = item; // if not custom fallback to default item
     }
     setSelected(selectedItem);
   };
@@ -31,7 +31,7 @@ export default function ChooseExerciseMenu({
     if (exerciseChooseDivRef?.current) {
       exerciseChooseDivRef.current.focus();
       if (
-        !contentEditable &&
+        !contentEditable && //if custom workout is selected but a custom workout isn't entered and div is blurred, fall back to default placeholder
         exerciseChooseDivRef.current.innerText.trim() ===
           CUSTOM_WORKOUT_MENU_ITEM_ONCLICK
       ) {
@@ -41,7 +41,7 @@ export default function ChooseExerciseMenu({
   }, [contentEditable]);
 
   const items = ["Fetched Ex-Logged Workouts"];
-  includeCustomWorkout ? items.push(CUSTOM_WORKOUT_MENU_ITEM) : {};
+  includeCustomWorkout ? items.push(CUSTOM_WORKOUT_MENU_ITEM) : {}; //if custom workout is included push the option
 
   let count = 0;
   return (

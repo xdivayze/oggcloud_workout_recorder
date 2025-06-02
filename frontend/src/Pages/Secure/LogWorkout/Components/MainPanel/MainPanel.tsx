@@ -4,7 +4,7 @@ import {
   MainPanelRefContext,
   type MainPanelRefContextType,
 } from "../MainPanelWrapper";
-import ChooseExerciseMenu from "./ChooseExerciseMenu";
+import ChooseExerciseMenu from "./ChooseExerciseMenu/ChooseExerciseMenu";
 import {
   PartialRepSchema,
   type PartialRepArrayType,
