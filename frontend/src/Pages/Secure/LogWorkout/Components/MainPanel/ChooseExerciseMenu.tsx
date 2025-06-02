@@ -2,8 +2,14 @@ import { useContext, useEffect, useState } from "react";
 import { MainPanelRefContext } from "../MainPanelWrapper";
 
 const CUSTOM_WORKOUT_MENU_ITEM = "Enter Custom Workout";
+const CUSTOM_WORKOUT_MENU_ITEM_ONCLICK = "Enter Workout Name";
+const PLACEHOLDER_TEXT = "Choose Exercise";
 
-export default function ChooseExerciseMenu() {
+export default function ChooseExerciseMenu({
+  includeCustomWorkout = true,
+}: {
+  includeCustomWorkout?: boolean;
+}) {
   const exerciseChooseDivRef =
     useContext(MainPanelRefContext)?.exerciseChooseDivRef;
   const [selected, setSelected] = useState("");
@@ -11,23 +17,33 @@ export default function ChooseExerciseMenu() {
   const [isOpen, setIsOpen] = useState(false);
 
   const onSelect = (item: string) => {
+    let selectedItem = "";
     if (item.trim() === CUSTOM_WORKOUT_MENU_ITEM) {
-      if (exerciseChooseDivRef?.current) {
-        exerciseChooseDivRef.current.innerText = "Enter Workout";
-      }
+      selectedItem = CUSTOM_WORKOUT_MENU_ITEM_ONCLICK;
       setContentEditable(true);
+    } else {
+      selectedItem = item;
     }
+    setSelected(selectedItem);
   };
 
   useEffect(() => {
     if (exerciseChooseDivRef?.current) {
       exerciseChooseDivRef.current.focus();
+      if (
+        !contentEditable &&
+        exerciseChooseDivRef.current.innerText.trim() ===
+          CUSTOM_WORKOUT_MENU_ITEM_ONCLICK
+      ) {
+        exerciseChooseDivRef.current.innerText = "Choose Exercise ";
+      }
     }
   }, [contentEditable]);
-  
-  const items = ["Fetched Ex-Logged Workouts", CUSTOM_WORKOUT_MENU_ITEM];
+
+  const items = ["Fetched Ex-Logged Workouts"];
+  includeCustomWorkout ? items.push(CUSTOM_WORKOUT_MENU_ITEM) : {};
+
   let count = 0;
-  const placeholderText = "Choose Exercise";
   return (
     <div className="h-full w-full relative inline-block">
       <div
@@ -42,7 +58,7 @@ export default function ChooseExerciseMenu() {
           setIsOpen(!isOpen);
         }}
       >
-        {selected !== "" ? selected : placeholderText}
+        {selected !== "" ? selected : PLACEHOLDER_TEXT}
       </div>
 
       <div
@@ -63,7 +79,6 @@ export default function ChooseExerciseMenu() {
                 }`}
                 key={item}
                 onClick={() => {
-                  setSelected(item);
                   setIsOpen(false);
                   onSelect(item);
                 }}

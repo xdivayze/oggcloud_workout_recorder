@@ -6,6 +6,7 @@ import SecurityContext from "./Pages/Secure/SecurityContext";
 import Login from "./Pages/Login/Login";
 import ProtectedWrapper from "./Pages/Secure/ProtectedWrapper";
 import SignOut from "./Pages/Secure/SignOut";
+import Progress from "./Pages/Secure/Progress/Progress";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="" element={<ProtectedWrapper />}>
             <Route path="log-workout" element={<LogWorkout />} />
             <Route path="sign-out" element={<SignOut />} />
+            <Route path="progress" element={<Progress />} />
           </Route>
         </Route>
       </Routes>

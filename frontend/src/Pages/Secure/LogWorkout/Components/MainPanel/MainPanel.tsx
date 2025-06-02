@@ -14,6 +14,8 @@ import SetPartialSummary from "./SetPartialSummary";
 import { REQUEST_FIELDNAMES } from "../../../../../Tools/constants";
 import { authContext } from "../../../SecurityContext";
 
+//TODO add option to set date
+
 export default function MainPanel() {
   const importedAuthContext = useContext(authContext);
 
@@ -26,7 +28,7 @@ export default function MainPanel() {
   } = useContext(MainPanelRefContext) as MainPanelRefContextType;
   const [partialSums, setPartialSums] = useState<
     Map<string, PartialRepObjectType>
-  >(new Map()); //TODO switch this with an object of data that will be mapped to react components
+  >(new Map()); 
   return (
     <div
       className=" overflow-y-auto h-full w-full rounded-3xl
@@ -39,13 +41,14 @@ export default function MainPanel() {
         <div> Current Set</div>
         <div className="h-11 w-1/6">
           <MiniPanel
-          contentEditable={false}
+            contentEditable={false}
             color="bg-gray-ogg-2"
             ref={setNumberDivRef}
             placeholderText="1"
             dropdownFeatures={{
               items: Array.from({ length: 9 }, (_, i) => (1 + i).toString()),
               onSelect(item) {
+                //TODO add feature to store old set partial sums and only show current set's partial sums
                 setNumberDivRef.current.innerText = item;
               },
             }}
