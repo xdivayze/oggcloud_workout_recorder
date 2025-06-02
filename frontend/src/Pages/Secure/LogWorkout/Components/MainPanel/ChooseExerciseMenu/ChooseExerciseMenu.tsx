@@ -32,10 +32,8 @@ export default function ChooseExerciseMenu({
   };
 
   useEffect(() => {
-    console.log("hi")
     if (exerciseChooseDivRef?.current) {
       exerciseChooseDivRef.current.focus();
-      console.log("hi")
       if (
         !contentEditable && //if custom workout is selected but a custom workout isn't entered and div is blurred, fall back to default placeholder
         exerciseChooseDivRef.current.innerText.trim() ===
