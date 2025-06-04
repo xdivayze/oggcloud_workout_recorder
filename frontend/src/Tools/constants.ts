@@ -1,7 +1,7 @@
 
 
 const REQUEST_FIELDNAMES = {
-    ID : "id",
+    ID : "loginID",
     PASSWORD: "password",
     AUTH_CODE: "authCode",
     EXPIRES_AT : "expiresAt",

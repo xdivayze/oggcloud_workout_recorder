@@ -1,7 +1,8 @@
 package db
 
 import (
-	"backend/src/models"
+	"backend/src/models/auth_code"
+	user_model "backend/src/models/user"
 	"fmt"
 	"log"
 	"os"
@@ -32,8 +33,8 @@ func ConnectDB() error {
 
 	//db configs
 
-	DB.AutoMigrate(&models.User{})
-	DB.AutoMigrate(&models.AuthCode{})
+	DB.AutoMigrate(&user_model.User{})
+	DB.AutoMigrate(&auth_code.AuthCode{})
 
 	//--
 	return nil

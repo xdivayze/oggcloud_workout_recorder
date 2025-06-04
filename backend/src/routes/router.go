@@ -6,5 +6,6 @@ func RegisterRoutes(r *gin.Engine) {
 	api := r.Group("/api")
 	{
 		userRoutes(api)
+		protectedRoutes(api)
 	}
 }
