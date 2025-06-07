@@ -2,12 +2,10 @@ package auth_code
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type AuthCode struct {
-	gorm.Model
+	ID        uint   `gorm:"primaryKey"`
 	Code      string `gorm:"unique"`
 	UserID    uint
 	ExpiresAt time.Time

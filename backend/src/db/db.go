@@ -32,10 +32,8 @@ func ConnectDB() error {
 	log.Println("DB connection established")
 
 	//db configs
-
-	DB.AutoMigrate(&user_model.User{})
-	DB.AutoMigrate(&auth_code.AuthCode{})
-
+	DB.Migrator().DropTable(&auth_code.AuthCode{}, &user_model.User{})
+	DB.AutoMigrate(&user_model.User{}, &auth_code.AuthCode{})
 	//--
 	return nil
 

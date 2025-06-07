@@ -2,12 +2,10 @@ package user
 
 import (
 	"backend/src/models/auth_code"
-
-	"gorm.io/gorm"
 )
 
 type User struct {
-	gorm.Model
+	ID             uint   `gorm:"primaryKey"`
 	LoginID        string `gorm:"unique"`
 	BCryptPassword string
 	AuthCodes      []auth_code.AuthCode `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
