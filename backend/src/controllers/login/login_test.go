@@ -1,0 +1,50 @@
+package login_test
+
+import (
+	"backend/src/controllers/login"
+	"backend/src/db"
+	"backend/src/models/auth_code"
+	"backend/src/models/user"
+	"bytes"
+	"encoding/json"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/require"
+)
+
+func TestLoginUserNotFound(t *testing.T) {
+
+	require := require.New(t)
+
+	//Initialize test database
+	require.Nil(db.TestDB(), "Failed to create require instance")
+	defer db.DB.Migrator().DropTable(&user.User{}, &auth_code.AuthCode{})
+
+	loginID := "nonexistent_user"
+	password := "some_password"
+	// Simulate a login attempt with a non-existent user
+
+	router := gin.Default()
+	router.POST("/login", func(c *gin.Context) {
+		login.HandleLogin(c)
+	})
+
+	body, err := json.Marshal(map[string]string{
+		user.LoginIDKey:  loginID,
+		user.PasswordKey: password,
+	})
+	require.Nil(err, "Error marshalling request body")
+
+	req := httptest.NewRequest("POST", "/login", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	resp := httptest.NewRecorder()
+	router.ServeHTTP(resp, req)
+
+	require.Equal(200, resp.Code, "Expected status code 200 for user not found")
+
+	//check authCode in header
+	require.NotEmpty(resp.Header().Get(auth_code.AUTH_CODE_FIELDNAME), "Expected auth code to be present in response header")
+
+}
