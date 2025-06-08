@@ -19,7 +19,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
+		// Extract the login ID from the header
 		loginIDHeader := c.GetHeader(user.LoginIDKey)
 
 		if loginIDHeader == "" {
@@ -35,21 +35,23 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
+		// Check if the authorization code is valid
 		authCode, err := auth_code.GetUserAuthCode(db.DB, userModel.ID, authHeader)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization code"})
 			c.Abort()
 			return
 		}
-
+		// Check if the authorization code has expired
 		if authCode.HasExpired() {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization code has expired"})
 			c.Abort()
 			return
 		}
 
+		// If everything is valid, set the user in the context
 		c.Set("user", userModel)
+
 		c.Next()
 	}
 }

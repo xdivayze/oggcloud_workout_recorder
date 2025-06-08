@@ -1,7 +1,7 @@
 package login_test
 
 import (
-	"backend/src/controllers/login"
+	"backend/src/controllers/user_controller/login"
 	"backend/src/db"
 	"backend/src/models/auth_code"
 	"backend/src/models/user"

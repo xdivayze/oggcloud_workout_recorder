@@ -3,6 +3,8 @@ package db
 import (
 	"backend/src/models/auth_code"
 	user_model "backend/src/models/user"
+	"backend/src/models/workout/partial_summary"
+	"backend/src/models/workout/workout"
 	"fmt"
 	"log"
 	"os"
@@ -12,6 +14,12 @@ import (
 )
 
 var DB *gorm.DB
+
+var TABLES = []interface{}{
+		&user_model.User{},
+		&auth_code.AuthCode{},
+		&partial_summary.PartialSummary{},
+		&workout.Workout{},}
 
 func ConnectDB() error {
 	host := os.Getenv("DB_HOST")
@@ -32,8 +40,8 @@ func ConnectDB() error {
 	log.Println("DB connection established")
 
 	//db configs
-	DB.Migrator().DropTable(&auth_code.AuthCode{}, &user_model.User{})
-	DB.AutoMigrate(&user_model.User{}, &auth_code.AuthCode{})
+	DB.Migrator().DropTable(TABLES...)
+	DB.AutoMigrate(TABLES...)
 	//--
 	return nil
 
