@@ -81,11 +81,8 @@ func TestLogWorkoutWorkoutExistsShouldSucceed(t *testing.T) {
 		require.Equal(100, retrievedWorkoutPartialSummaries[0].Weight, "Expected weight to be 100")
 		require.Equal("kg", retrievedWorkoutPartialSummaries[0].Unit, "Expected unit to be kg")
 	}
-	
+
 }
-
-
-
 
 func TestLogWorkoutWorkoutMissingShouldSucceed(t *testing.T) {
 	require := require.New(t)
