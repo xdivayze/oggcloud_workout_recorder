@@ -12,7 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func hashPassword(password string) (string, error) { //use bcrypt to hash the sent password hash
+func HashPassword(password string) (string, error) { //use bcrypt to hash the sent password hash
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return "", err
@@ -27,7 +27,7 @@ func checkPassword(hashedPassword, password string) error { //use bcrypt to chec
 func handleUserNotFound(user *user_module.User, loginID, password string, db *gorm.DB) error {
 	// If user is not found, create a new user with the provided loginID and password
 	user.LoginID = loginID
-	hashedPassword, err := hashPassword(password)
+	hashedPassword, err := HashPassword(password)
 	if err != nil {
 		return fmt.Errorf("error hashing password: %w", err)
 	}
