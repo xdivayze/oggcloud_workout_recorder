@@ -25,3 +25,11 @@ func GetByUserIDAndDate(db *gorm.DB, userID uint, date time.Time) (*Session, err
 	}
 	return &session, nil
 }
+
+func GetAllByUserID(db *gorm.DB, userID uint) ([]Session, error) {
+	var sessions []Session
+	if err := db.Where("user_id = ?", userID).Find(&sessions).Error; err != nil {
+		return nil, err
+	}
+	return sessions, nil
+}

@@ -11,3 +11,5 @@ type Exercise struct {
 	MaxWeight   int    `json:"max_weight" gorm:"not null"` // Maximum weight for the exercise
 	MinWeight   int    `json:"min_weight" gorm:"not null"` // Minimum weight for the exercise
 }
+
+var EXERCISE_NAME_QUERY_PARAM = "exercise_name"
