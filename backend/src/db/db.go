@@ -3,8 +3,11 @@ package db
 import (
 	"backend/src/models/auth_code"
 	user_model "backend/src/models/user"
-	"backend/src/models/workout/partial_summary"
-	"backend/src/models/workout/workout"
+	"backend/src/models/workout/exercise"
+	"backend/src/models/workout/repetition"
+	"backend/src/models/workout/session"
+	"backend/src/models/workout/set"
+
 	"fmt"
 	"log"
 	"os"
@@ -16,10 +19,13 @@ import (
 var DB *gorm.DB
 
 var TABLES = []interface{}{
-		&user_model.User{},
-		&auth_code.AuthCode{},
-		&partial_summary.PartialSummary{},
-		&workout.Workout{},}
+	&user_model.User{},
+	&auth_code.AuthCode{},
+	&repetition.Repetition{},
+	&set.Set{},
+	&session.Session{},
+	&exercise.Exercise{},
+}
 
 func ConnectDB() error {
 	host := os.Getenv("DB_HOST")

@@ -3,8 +3,10 @@ package log_workout
 import (
 	"backend/src/db"
 	user_model "backend/src/models/user" // Assuming user is a package that contains the User model
-	"backend/src/models/workout/partial_summary"
-	"backend/src/models/workout/workout"
+	"backend/src/models/workout/exercise"
+	"backend/src/models/workout/repetition"
+	"backend/src/models/workout/session"
+	set_module "backend/src/models/workout/set"
 	"errors"
 
 	"github.com/gin-gonic/gin"
@@ -20,37 +22,88 @@ func HandleLogWorkout(c *gin.Context) {
 		c.JSON(400, gin.H{"error": "Invalid request data"})
 		return
 	}
-	if len(logWorkoutRequest.PartialSummaries) == 0 {
+	if len(logWorkoutRequest.Sets) == 0 {
 		c.JSON(400, gin.H{"error": "No workout data provided"})
 		return
 	}
 
-	for _, summary := range logWorkoutRequest.PartialSummaries {
-		retrievedWorkout, err := workout.GetUserWorkoutFromWorkoutNameAndUserID(db.DB, user.ID, summary.ExerciseName)
+	retrievedSession, err := session.GetByUserIDAndDate(db.DB, user.ID, logWorkoutRequest.Date)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// If the session is not found, create a new one
+			newSession := &session.Session{
+				UserID: user.ID,
+				Date:   logWorkoutRequest.Date,
+			}
+			if err := newSession.Create(db.DB); err != nil {
+				c.JSON(500, gin.H{"error": "Error creating new session"})
+				return
+			}
+			retrievedSession = newSession
+		} else {
+			c.JSON(500, gin.H{"error": "Error retrieving session"})
+			return
+		}
+	}
+
+	for _, set := range logWorkoutRequest.Sets {
+
+		retrievedExercise, err := exercise.GetByName(db.DB, set.ExerciseName)
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				// If the workout is not found, create a new one
-				createdWorkout, err := HandleWorkoutNotFound(summary.ExerciseName, user.ID, db.DB)
-				if err != nil {
-					c.JSON(500, gin.H{"error": "Error creating new workout"})
+				// If the exercise is not found, create a new one
+				newExercise := &exercise.Exercise{
+					Name: set.ExerciseName,
+				}
+				if err := newExercise.Create(db.DB); err != nil {
+					c.JSON(500, gin.H{"error": "Error creating new exercise"})
 					return
 				}
-				retrievedWorkout = createdWorkout
+				retrievedExercise = newExercise
 			} else {
-				c.JSON(500, gin.H{"error": "Error retrieving workout"})
+				c.JSON(500, gin.H{"error": "Error retrieving exercise"})
 				return
 			}
 		}
-		// append the new summary to the workout
-		newPartialSummary := &partial_summary.PartialSummary{
-			SetNo:    summary.SetNo,
-			RepCount: summary.RepCount,
-			Weight:   summary.Weight,
-			Unit:     summary.Unit,
+
+		foundSet, err := set_module.GetBySessionIDAndExerciseNameAndSetNumber(db.DB, retrievedSession.ID, retrievedExercise.ID, set.SetNo)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				// If the set is not found, create a new one
+				newSet := &set_module.Set{
+					SessionID:  retrievedSession.ID,
+					ExerciseID: retrievedExercise.ID,
+					SetNumber:  uint(set.SetNo),
+					Reps:       []repetition.Repetition{}, // Initialize with an empty slice
+				}
+
+				if err := newSet.Create(db.DB); err != nil {
+					c.JSON(500, gin.H{"error": "Error creating new set"})
+					return
+				}
+				foundSet = newSet
+			} else {
+				c.JSON(500, gin.H{"error": "Error retrieving set"})
+				return
+			}
 		}
-		if err := AppendPartialSummaryToWorkout(retrievedWorkout, newPartialSummary, db.DB); err != nil {
-			c.JSON(500, gin.H{"error": "Error appending partial summary to workout"})
+		var foundReps []*repetition.Repetition
+		if err := db.DB.Model(foundSet).Association("Reps").Find(&foundReps); err != nil {
+			c.JSON(500, gin.H{"error": "Error retrieving repetitions for the set"})
 			return
+		}
+		lenRepsInSet := len(foundReps)
+
+		// If the set is found, update it with the new data
+		for i := 0; i < set.RepCount; i++ {
+			db.DB.Model(&foundSet).Association("Reps").Append(&repetition.Repetition{
+				Weight:           set.Weight,
+				Unit:             set.Unit,
+				SetID:            foundSet.ID,
+				RepPositionInSet: i + lenRepsInSet, // Assuming this is the position of the repetition in the set 0 indexed
+				ExerciseID:       retrievedExercise.ID,
+			})
+
 		}
 
 	}
