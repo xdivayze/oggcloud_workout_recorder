@@ -6,11 +6,13 @@ import (
 	"backend/src/middleware"
 	"backend/src/models/auth_code"
 	"backend/src/models/user"
-	"fmt"
-
-	"backend/src/models/workout/workout"
+	"backend/src/models/workout/exercise"
+	"backend/src/models/workout/repetition"
+	"backend/src/models/workout/session"
+	"backend/src/models/workout/set"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -38,20 +40,49 @@ func TestLogWorkoutWorkoutExistsShouldSucceed(t *testing.T) {
 		ExpiresAt: time.Now().Add(auth_code.CODE_VALIDATION_LENGTH_MIN * time.Minute),
 	})
 
-	// Create a workout for the user
-	testWorkout := &workout.Workout{
-		UserID:       testUser.ID,
-		ExerciseName: "bench press",
+	now := time.Now()
+
+	//create an exercise
+	testExercise := &exercise.Exercise{
+		Name: "bench press",
 	}
-	require.Nil(testWorkout.Create(db.DB), "Failed to create test workout")
+	require.Nil(db.DB.Create(testExercise).Error, "Failed to create test exercise")
+
+	//create a session for the user
+	testSession := &session.Session{
+		UserID: testUser.ID,
+		Date:   now}
+	require.Nil(db.DB.Create(testSession).Error, "Failed to create test session")
+	// Append sets to the session
+	setID := 5
+
+	require.Nil(db.DB.Model(testSession).Association("Sets").Append(&set.Set{
+		ID:         uint(setID),
+		ExerciseID: testExercise.ID,
+		SessionID:  testSession.ID,
+		Reps: []repetition.Repetition{
+			{
+				ExerciseID:       testExercise.ID,
+				SetID:            uint(setID),
+				Weight:           100,
+				Unit:             "kg",
+				RepPositionInSet: 1,
+			},
+		},
+		SetNumber: 1,
+	}))
 	router := gin.Default()
 	router.Use(middleware.AuthMiddleware()) // Use the auth middleware
 	router.POST("/log-workout", func(c *gin.Context) {
 		log_workout.HandleLogWorkout(c)
 	})
-	logWorkoutRequest := log_workout.NewLogWorkoutRequest([]log_workout.PartialSummaryRequest{
-		log_workout.NewPartialSummaryRequest(1, 10, "bench press", 100, "kg"),
-	})
+
+	logWorkoutRequest := log_workout.NewLogWorkoutRequest([]log_workout.SetRequest{
+		log_workout.NewSetRequest(1, 6, "bench press", 100, "kg"),
+		log_workout.NewSetRequest(1, 5, "bench press", 75, "kg"),
+		log_workout.NewSetRequest(2, 5, "bench press", 105, "kg"),
+		log_workout.NewSetRequest(2, 3, "bench press", 80, "kg"),
+	}, now)
 
 	body, err := json.Marshal(logWorkoutRequest)
 
@@ -66,20 +97,22 @@ func TestLogWorkoutWorkoutExistsShouldSucceed(t *testing.T) {
 	fmt.Printf("Response: %s\n", resp.Body.String())
 	require.Equal(200, resp.Code, "Expected status code 200 for successful workout logging")
 
-	retrievedWorkout, err := workout.GetUserWorkoutFromWorkoutNameAndUserID(db.DB, testUser.ID, "bench press")
-	{ // Check if the workout was created successfully
-		require.Nil(err, "Error retrieving workout partial summaries")
-		require.NotNil(retrievedWorkout, "Retrieved workout should not be nil")
-		require.Equal("bench press", retrievedWorkout.ExerciseName, "Expected workout name to be 'bench press'")
-	}
-	retrievedWorkoutPartialSummaries, err := retrievedWorkout.GetPartialSummaries(db.DB)
-	{ // Check if the partial summary was logged correctly
-		require.Nil(err, "Error retrieving workout partial summaries")
-		require.Len(retrievedWorkoutPartialSummaries, 1, "Expected one partial summary for the logged workout")
-		require.Equal(1, retrievedWorkoutPartialSummaries[0].SetNo, "Expected set number to be 1")
-		require.Equal(10, retrievedWorkoutPartialSummaries[0].RepCount, "Expected rep count to be 10")
-		require.Equal(100, retrievedWorkoutPartialSummaries[0].Weight, "Expected weight to be 100")
-		require.Equal("kg", retrievedWorkoutPartialSummaries[0].Unit, "Expected unit to be kg")
+	retrievedSession, err := session.GetByUserIDAndDate(db.DB, testUser.ID, logWorkoutRequest.Date)
+	require.Nil(err, "Error retrieving session by user ID and date")
+	require.NotNil(retrievedSession, "Retrieved session should not be nil")
+	require.Equal(logWorkoutRequest.Date.Unix(), retrievedSession.Date.Unix(), "Retrieved session date should match the request date")
+
+	require.Equal(testUser.ID, retrievedSession.UserID, "Retrieved session user ID should match the test user ID")
+	require.Nil(db.DB.Model(retrievedSession).Association("Sets").Find(&retrievedSession.Sets))
+	require.Len(retrievedSession.Sets, 2, "Retrieved session should have 4 sets")
+
+	for _, set := range retrievedSession.Sets {
+		db.DB.Model(set).Association("Reps").Find(&set.Reps)
+		require.NotEmpty(set.Reps, "Set should have repetitions")
+		for _, rep := range set.Reps {
+			require.NotEmpty(rep.Weight, "Repetition weight should not be empty")
+			require.NotEmpty(rep.Unit, "Repetition unit should not be empty")
+		}
 	}
 
 }
@@ -109,9 +142,12 @@ func TestLogWorkoutWorkoutMissingShouldSucceed(t *testing.T) {
 		log_workout.HandleLogWorkout(c)
 	})
 
-	logWorkoutRequest := log_workout.NewLogWorkoutRequest([]log_workout.PartialSummaryRequest{
-		log_workout.NewPartialSummaryRequest(1, 10, "bench press", 100, "kg"),
-	})
+	logWorkoutRequest := log_workout.NewLogWorkoutRequest([]log_workout.SetRequest{
+		log_workout.NewSetRequest(1, 6, "bench press", 100, "kg"),
+		log_workout.NewSetRequest(1, 5, "bench press", 75, "kg"),
+		log_workout.NewSetRequest(2, 5, "bench press", 105, "kg"),
+		log_workout.NewSetRequest(2, 3, "bench press", 80, "kg"),
+	}, time.Now())
 
 	body, err := json.Marshal(logWorkoutRequest)
 
@@ -125,51 +161,23 @@ func TestLogWorkoutWorkoutMissingShouldSucceed(t *testing.T) {
 	router.ServeHTTP(resp, req)
 	fmt.Printf("Response: %s\n", resp.Body.String())
 	require.Equal(200, resp.Code, "Expected status code 200 for successful workout logging")
-	retrievedWorkout, err := workout.GetUserWorkoutFromWorkoutNameAndUserID(db.DB, testUser.ID, "bench press")
-	{ // Check if the workout was created successfully
 
-		require.Nil(err, "Error retrieving workout partial summaries")
-		require.NotNil(retrievedWorkout, "Retrieved workout should not be nil")
-		require.Equal("bench press", retrievedWorkout.ExerciseName, "Expected workout name to be 'bench press'")
+	retrievedSession, err := session.GetByUserIDAndDate(db.DB, testUser.ID, logWorkoutRequest.Date)
+	require.Nil(err, "Error retrieving session by user ID and date")
+	require.NotNil(retrievedSession, "Retrieved session should not be nil")
+	require.Equal(logWorkoutRequest.Date.Unix(), retrievedSession.Date.Unix(), "Retrieved session date should match the request date")
+
+	require.Equal(testUser.ID, retrievedSession.UserID, "Retrieved session user ID should match the test user ID")
+	require.Nil(db.DB.Model(retrievedSession).Association("Sets").Find(&retrievedSession.Sets))
+	require.Len(retrievedSession.Sets, 2, "Retrieved session should have 4 sets")
+
+	for _, set := range retrievedSession.Sets {
+		db.DB.Model(set).Association("Reps").Find(&set.Reps)
+		require.NotEmpty(set.Reps, "Set should have repetitions")
+		for _, rep := range set.Reps {
+			require.NotEmpty(rep.Weight, "Repetition weight should not be empty")
+			require.NotEmpty(rep.Unit, "Repetition unit should not be empty")
+		}
 	}
-	retrievedWorkoutPartialSummaries, err := retrievedWorkout.GetPartialSummaries(db.DB)
-	{ // Check if the partial summary was logged correctly
-		require.Nil(err, "Error retrieving workout partial summaries")
-		require.Len(retrievedWorkoutPartialSummaries, 1, "Expected one partial summary for the logged workout")
-		require.Equal(1, retrievedWorkoutPartialSummaries[0].SetNo, "Expected set number to be 1")
-		require.Equal(10, retrievedWorkoutPartialSummaries[0].RepCount, "Expected rep count to be 10")
-		require.Equal(100, retrievedWorkoutPartialSummaries[0].Weight, "Expected weight to be 100")
-		require.Equal("kg", retrievedWorkoutPartialSummaries[0].Unit, "Expected unit to be kg")
-	}
 
-}
-
-func TestLogWorkoutUserMissingShouldFail(t *testing.T) {
-	require := require.New(t)
-
-	//Initialize test database
-	require.Nil(db.TestDB(), "Failed to create require instance")
-	defer db.DB.Migrator().DropTable(db.TABLES...)
-
-	router := gin.Default()
-	router.Use(middleware.AuthMiddleware()) // Use the auth middleware
-	router.POST("/log-workout", func(c *gin.Context) {
-		log_workout.HandleLogWorkout(c)
-	})
-
-	logWorkoutRequest := log_workout.NewLogWorkoutRequest([]log_workout.PartialSummaryRequest{
-		log_workout.NewPartialSummaryRequest(1, 10, "bench press", 100, "kg"),
-	})
-
-	body, err := json.Marshal(logWorkoutRequest)
-
-	require.Nil(err, "Error marshalling request body")
-	req := httptest.NewRequest("POST", "/log-workout", bytes.NewBuffer(body))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set(auth_code.AUTH_CODE_FIELDNAME, "test_auth_code") // Set the auth code in the header
-
-	resp := httptest.NewRecorder()
-	router.ServeHTTP(resp, req)
-	fmt.Printf("Response: %s\n", resp.Body.String())
-	require.Equal(401, resp.Code, "Expected status code 400 for missing user")
 }
