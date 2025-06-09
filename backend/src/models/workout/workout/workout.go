@@ -2,6 +2,8 @@ package workout
 
 import "backend/src/models/workout/partial_summary"
 
+var EXERCISE_NAME_QUERY_PARAM = "exercise_name"
+
 //Workout unites all of user's partial summaries for a specific exercise.
 type Workout struct { 
 	ID               uint                              `json:"id" gorm:"primaryKey"`

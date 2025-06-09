@@ -21,3 +21,19 @@ func GetByWorkoutID(db *gorm.DB, workoutID uint) ([]PartialSummary, error) {
 	}
 	return summaries, nil
 }
+
+func GetByWorkoutIDAndUserID(db *gorm.DB, workoutID, userID uint) ([]PartialSummary, error) {
+	//returns all partial summaries for a specific workout and user, newest first
+
+	var summaries []PartialSummary
+	err := db.Model(&PartialSummary{}).
+		Where("workout_id = ? AND user_id = ?", workoutID, userID).
+		Order("created_at DESC").
+		Find(&summaries).Error
+	if err != nil {
+		return nil, err
+	}
+	
+
+	return summaries, nil
+}
