@@ -15,19 +15,18 @@ import (
 	"gonum.org/v1/plot/vg"
 	"gonum.org/v1/plot/vg/draw"
 	"gonum.org/v1/plot/vg/vgimg"
-	"gorm.io/gorm"
 )
 
 func handleGenerateProgressPlot(yPadding vg.Length, startTime time.Time, endTime time.Time,
 	maxIntensity, minIntensity float64, columnWidth,
 	minHeight, maxHeight vg.Length,
 	colorSetterFunction func(intensity float64) color.Color,
-	db *gorm.DB, sessions []session.Session, exerciseID uint) (*bytes.Buffer, error) {
+	sessions []session.Session, exerciseID uint, exerciseName string) (*bytes.Buffer, error) {
 
 	//This function generates a plot of the user's progress for a specific exercise.
 	//It returns a bytes.Buffer containing the image/png data of the plot.
 
-		var buf bytes.Buffer
+	var buf bytes.Buffer
 	if exerciseID == 0 {
 		return &buf, errors.New("exercise ID is required")
 	}
@@ -47,8 +46,9 @@ func handleGenerateProgressPlot(yPadding vg.Length, startTime time.Time, endTime
 		colorSetterFunction,
 	)
 
+
 	p := plot.New()
-	p.Title.Text = "Progress Plot for Exercise ID: " + string(exerciseID)
+	p.Title.Text = fmt.Sprintf("Progress Plot for Exercise: %s ", exerciseName)
 	p.X.Label.Text = "Session Date"
 	p.Y.Label.Text = "Rep Number"
 
@@ -65,7 +65,7 @@ func handleGenerateProgressPlot(yPadding vg.Length, startTime time.Time, endTime
 	p.Y.Min = 0
 	p.Y.Max = float64(heatmap.MaxReps + 3)
 
-	img := vgimg.New(500,500)
+	img := vgimg.New(500, 500)
 	dc := draw.New(img)
 	p.Draw(dc)
 

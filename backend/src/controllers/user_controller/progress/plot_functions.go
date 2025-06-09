@@ -1,12 +1,11 @@
 package progress
 
 import (
+	"backend/src/db"
 	"backend/src/models/workout/session"
 	"backend/src/models/workout/set"
 
-
 	"github.com/xdivayze/oggcloud_workout_plotter/intraset_heatmap"
-
 )
 
 func generatePlotData(sessions []session.Session, exerciseID uint) intraset_heatmap.Sessioner {
@@ -31,6 +30,8 @@ func generateModelAppropriateSetSlice(tidiedSession session.Session, exerciseID 
 	// It returns a slice of intraset_heatmap.Set
 	var sets []*intraset_heatmap.Set
 	for _, set := range tidiedSession.Sets {
+		
+		db.DB.Model(&set).Association("Reps").Find(&set.Reps)
 		if len(set.Reps) == 0 {
 			continue // Skip sets with no repetitions
 		}
@@ -65,6 +66,7 @@ func tidySessionKeepOnlySameExercise(session session.Session, exerciseID uint) s
 	// This function tidies the session by keeping only the same-exercise reps while
 	//preserving the session structure
 	var preservedSets []set.Set
+	db.DB.Model(&session).Association("Sets").Find(&preservedSets)
 	for _, set := range session.Sets {
 		if len(set.Reps) == 0 {
 			continue // Skip sets with no repetitions

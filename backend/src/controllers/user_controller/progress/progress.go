@@ -24,9 +24,8 @@ func HandleGetProgress(c *gin.Context) {
 	exerciseName := params.Get(exercise.EXERCISE_NAME_QUERY_PARAM)
 	startTime := params.Get("start_time")
 	endTime := params.Get("end_time")
-	color := params.Get("color")
 
-	if exerciseName == "" || startTime == "" || endTime == "" || color == "" {
+	if exerciseName == "" || startTime == "" || endTime == ""  {
 		// If any parameter is missing, return a 400 Bad Request error
 		c.JSON(400, gin.H{"error": "a parameter is missing"})
 		return
@@ -85,7 +84,7 @@ func HandleGetProgress(c *gin.Context) {
 
 	img, err := handleGenerateProgressPlot(YPADDING, startTimeParsed, endTimeParsed,
 		float64(MAX_INTENSITY), float64(MIN_INTENSITY), COLUMN_WIDTH,
-		MIN_HEIGHT, MAX_HEIGHT, colorSetterFunc, db.DB, sessions, foundEx.ID)
+		MIN_HEIGHT, MAX_HEIGHT, colorSetterFunc, sessions, foundEx.ID, exerciseName)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "failed to generate progress plot"})
 		return
