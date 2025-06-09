@@ -1,22 +1,25 @@
 package log_workout
 
-func NewPartialSummaryRequest(setNo, repCount int, exerciseName string, weight int, unit string) PartialSummaryRequest {
-	return PartialSummaryRequest{
+import "time"
+
+func NewSetRequest(setNo, repCount int, exerciseName string, weight int, unit string) SetRequest {
+	return SetRequest{
 		SetNo:        setNo,
 		RepCount:     repCount,
 		ExerciseName: exerciseName,
 		Weight:       weight,
-		Unit:         unit,
-	}
+		Unit:         unit,}
 }
 
-func NewLogWorkoutRequest(partialSummaries []PartialSummaryRequest) LogWorkoutRequest {
+func NewLogWorkoutRequest(partialSummaries []SetRequest, date time.Time) LogWorkoutRequest {
 	return LogWorkoutRequest{
-		PartialSummaries: partialSummaries,
+		Sets: partialSummaries,
+		Date:             date,
+
 	}
 }
 
-type PartialSummaryRequest struct {
+type SetRequest struct {
 	SetNo        int
 	RepCount     int
 	ExerciseName string
@@ -25,5 +28,6 @@ type PartialSummaryRequest struct {
 }
 
 type LogWorkoutRequest struct {
-	PartialSummaries []PartialSummaryRequest `json:"partialSummaries" binding:"required"` // Assuming this is the correct field name
+	Sets 		   []SetRequest `json:"sets" binding:"required"` // List of sets, required field
+	Date             time.Time    `json:"date" binding:"required"`             // Date of the workout, required field
 }
