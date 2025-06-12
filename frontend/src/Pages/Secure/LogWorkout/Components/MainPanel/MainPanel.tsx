@@ -131,6 +131,7 @@ export default function MainPanel() {
               weight={c.weight}
               unit={c.unit}
               exerciseName={c.exerciseName}
+              setNo={c.setNo}
             />
           </div>
         ))}
