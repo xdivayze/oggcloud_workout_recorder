@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import { PartialRepArraySchema } from "../../Pages/Secure/LogWorkout/Components/MainPanel/types";
+import { LogWorkoutRequestSchema } from "../../Pages/Secure/LogWorkout/Components/MainPanel/types";
 import  { REQUEST_FIELDNAMES } from "../../Tools/constants";
 
 export default function handleLogWorkout() {
@@ -18,8 +18,8 @@ export default function handleLogWorkout() {
 
     try {
       const data = await request.json();
-      const partialRep = PartialRepArraySchema.parse(data);
-      partialRep.partialSummaries.forEach((v) => {
+      const partialRep = LogWorkoutRequestSchema.parse(data);
+      partialRep.sets.forEach((v) => {
         console.log(v);
       });
       return new HttpResponse(null,{ status: 200 });
