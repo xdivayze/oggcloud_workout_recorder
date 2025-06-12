@@ -6,16 +6,15 @@ import {
 } from "../MainPanelWrapper";
 import ChooseExerciseMenu from "./ChooseExerciseMenu/ChooseExerciseMenu";
 import {
-  PartialRepSchema,
-  type PartialRepArrayType,
-  type PartialRepObjectType,
+  WorkoutSetSchema,
+  type LogWorkoutRequestType,
+  type WorkoutSetType,
 } from "./types";
 import SetPartialSummary from "./SetPartialSummary";
 import { REQUEST_FIELDNAMES } from "../../../../../Tools/constants";
 import { authContext } from "../../../SecurityContext";
 
 //TODO add option to set date
-
 
 export default function MainPanel() {
   const importedAuthContext = useContext(authContext);
@@ -28,8 +27,8 @@ export default function MainPanel() {
     repCountRef,
   } = useContext(MainPanelRefContext) as MainPanelRefContextType;
   const [partialSums, setPartialSums] = useState<
-    Map<string, PartialRepObjectType>
-  >(new Map()); 
+    Map<string, WorkoutSetType>
+  >(new Map());
   return (
     <div
       className=" overflow-y-auto h-full w-full rounded-3xl
@@ -60,7 +59,7 @@ export default function MainPanel() {
         <div
           onClick={(e) => {
             e.preventDefault();
-            const psumObj = PartialRepSchema.parse({
+            const psumObj = WorkoutSetSchema.parse({
               repCount: Number(repCountRef.current.innerText.trim()),
               setNo: Number(setNumberDivRef.current.innerText.trim()),
               weight: Number(repWeightRef.current.innerText.trim()),
@@ -138,8 +137,9 @@ export default function MainPanel() {
       </div>
       <div
         onClick={() => {
-          const body: PartialRepArrayType = {
-            partialSummaries: [...partialSums.values()],
+          const body: LogWorkoutRequestType = {
+            sets: [...partialSums.values()],
+            date: new Date(),
           };
           fetch("/api/user/log-workout", {
             method: "POST",
@@ -147,7 +147,7 @@ export default function MainPanel() {
               "Content-Type": "application/json",
               [REQUEST_FIELDNAMES.AUTH_CODE]:
                 importedAuthContext?.authCode as string,
-              [REQUEST_FIELDNAMES.ID]: importedAuthContext?.id as string,
+              [REQUEST_FIELDNAMES.ID]: importedAuthContext?.loginID as string,
             },
             body: JSON.stringify(body),
           })
