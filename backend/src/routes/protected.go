@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"backend/src/controllers/user_controller/progress"
 	"backend/src/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -12,6 +13,7 @@ func protectedRoutes(rg *gin.RouterGroup) {
 	protected.Use(middleware.AuthMiddleware()) // Apply the authentication middleware
 	{
 		protected.GET("/log-workout")
+		protected.GET("/get-progress", progress.HandleGetProgress)
 	}
 
 }
