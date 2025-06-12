@@ -55,6 +55,7 @@ func TestHandleGenerateProgressShouldSucceed(t *testing.T) {
 		UserID: testUser.ID,
 		Date:   now}
 	require.Nil(db.DB.Create(testSession).Error, "Failed to create test session")
+
 	// Append sets to the session
 	setID := 5
 
@@ -66,6 +67,7 @@ func TestHandleGenerateProgressShouldSucceed(t *testing.T) {
 				RepPositionInSet: 1,
 			
 		}
+	
 	testSet := &set.Set{
 		ID:         uint(setID),
 		ExerciseID: testExercise.ID,
@@ -82,7 +84,7 @@ func TestHandleGenerateProgressShouldSucceed(t *testing.T) {
 		progress.HandleGetProgress(c)
 	})
 
-	req := httptest.NewRequest("GET", "/progress?exercise_name=bench%20press&start_time=2025-06-08%2000:00:00&end_time=2025-06-10%2000:00:00", nil)
+	req := httptest.NewRequest("GET", "/progress?exercise_name=bench%20press&start_time=2025-06-08%2000:00:00&end_time=2025-06-15%2000:00:00", nil)
 	req.Header.Set(auth_code.AUTH_CODE_FIELDNAME, "test_auth_code") // Set the auth code in the header
 	req.Header.Set(user.LoginIDKey, testUser.LoginID)
 	resp := httptest.NewRecorder()

@@ -59,7 +59,7 @@ func HandleGetProgress(c *gin.Context) {
 		return
 	}
 	userID := c.MustGet("user").(*user.User).ID
-	sessions, err := session.GetAllByUserID(db.DB, userID)
+	sessions, err := session.GetAllByUserIDAndDateRange(db.DB, userID, startTimeParsed, endTimeParsed)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(404, gin.H{"error": "no sessions found for user"})
@@ -72,6 +72,10 @@ func HandleGetProgress(c *gin.Context) {
 		c.JSON(404, gin.H{"error": "no sessions found for user"})
 		return
 	}
+	//extract set constraints for the earliest and latest sessions
+	earliestSession := sessions[0]
+	latestSession := sessions[len(sessions)-1]
+
 	colorSetterFunc := func(intensity float64) color_module.Color {
 		return color_module.RGBA{
 			R: 0,
@@ -82,7 +86,7 @@ func HandleGetProgress(c *gin.Context) {
 
 	}
 
-	img, err := handleGenerateProgressPlot(YPADDING, startTimeParsed, endTimeParsed,
+	img, err := handleGenerateProgressPlot(YPADDING, earliestSession.Date, latestSession.Date,
 		float64(MAX_INTENSITY), float64(MIN_INTENSITY), COLUMN_WIDTH,
 		MIN_HEIGHT, MAX_HEIGHT, colorSetterFunc, sessions, foundEx.ID, exerciseName)
 	if err != nil {
