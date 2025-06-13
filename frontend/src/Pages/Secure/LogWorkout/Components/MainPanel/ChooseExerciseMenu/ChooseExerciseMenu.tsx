@@ -34,7 +34,7 @@ export default function ChooseExerciseMenu({
     } else {
       selectedItem = item; // if not custom fallback to default item
       if (itemSelectEffectCallback) { //if a callback is provided, call it with the selected item
-        itemSelectEffectCallback(selected);
+        itemSelectEffectCallback(selectedItem);
       }
     }
     setSelected(selectedItem);

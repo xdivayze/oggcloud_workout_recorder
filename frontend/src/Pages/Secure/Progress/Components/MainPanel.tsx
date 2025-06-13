@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useContext, useEffect, useRef, useState, type RefObject } from "react";
 import ChooseExerciseMenu from "../../LogWorkout/Components/MainPanel/ChooseExerciseMenu/ChooseExerciseMenu";
 
 import DatePanel from "./DatePanel";
 import { FetchWorkoutPlots } from "./Service";
+import { authContext } from "../../SecurityContext";
 
 export default function MainPanel() {
   const exerciseChooseDivRef = useRef<HTMLDivElement | null>(
@@ -13,17 +14,27 @@ export default function MainPanel() {
   const [fetching, setFetching] = useState<boolean>(false);
   const [selectedExercise, setSelectedExercise] = useState<string>("");
   const [imageSrcs, setImageSrcs] = useState<Array<string> | null>(null);
-  useEffect(() => { // Fetch data when startDate, endDate, or exercise is selected
-      if (startDate && endDate && exerciseChooseDivRef.current.innerText && !fetching) {
-        FetchWorkoutPlots(
-          startDate,
-          endDate,
-          selectedExercise,
-          setFetching,
-          setImageSrcs
-          )
-      }
-  }, [selectedExercise, startDate, endDate])
+  const authContextFetched = useContext(authContext);
+
+  useEffect(() => {
+    // Fetch data when startDate, endDate, or exercise is selected
+    if (
+      startDate &&
+      endDate &&
+      selectedExercise &&
+      !fetching
+    ) {
+      FetchWorkoutPlots(
+        startDate,
+        endDate,
+        selectedExercise,
+        setFetching,
+        setImageSrcs,
+        authContextFetched?.authCode as string,
+        authContextFetched?.loginID as string
+      );
+    }
+  }, [selectedExercise, startDate, endDate]);
 
   return (
     <div
