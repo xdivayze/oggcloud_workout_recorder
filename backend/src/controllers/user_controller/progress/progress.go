@@ -99,6 +99,6 @@ func HandleGetProgress(c *gin.Context) {
 	}
 	// Set the content type to image/png and return the image data
 	c.Header("Content-Type", "image/png")
-	c.Data(200, "image/png", img.Bytes())
+	c.Data(200, "image/png", img.Bytes()) //TODO switch to multipart/form-data if needed
 
 }
