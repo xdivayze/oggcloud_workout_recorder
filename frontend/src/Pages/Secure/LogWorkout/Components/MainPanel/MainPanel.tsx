@@ -26,9 +26,9 @@ export default function MainPanel() {
     weightUnitRef,
     repCountRef,
   } = useContext(MainPanelRefContext) as MainPanelRefContextType;
-  const [partialSums, setPartialSums] = useState<
-    Map<string, WorkoutSetType>
-  >(new Map());
+  const [partialSums, setPartialSums] = useState<Map<string, WorkoutSetType>>(
+    new Map()
+  );
   return (
     <div
       className=" overflow-y-auto h-full w-full rounded-3xl
@@ -70,7 +70,7 @@ export default function MainPanel() {
               const newMap = new Map(prev);
 
               newMap.set(
-                Math.floor(Math.random() * 10 + 1).toString(),
+                Math.floor(Math.random() * 10000 + 1).toString(),
                 psumObj
               );
               return newMap;
@@ -115,18 +115,10 @@ export default function MainPanel() {
       </div>
       <div className="flex flex-col w-full mt-7">
         {[...partialSums.entries()].map(([k, c]) => (
-          <div
-            key={k}
-            onClick={() => {
-              setPartialSums((prev) => {
-                const newMap = new Map(prev);
-                newMap.delete(k);
-                return newMap;
-              });
-            }}
-            className="h-[70px] w-full mb-3"
-          >
+          <div key={k} className="h-[70px] w-full mb-3">
             <SetPartialSummary
+              setPartialSums={setPartialSums}
+              k={k}
               repCount={c.repCount}
               weight={c.weight}
               unit={c.unit}
