@@ -14,8 +14,11 @@ export default function handleGetProgress() {
         { status: 400 }
       );
     }
-    const startDateParsed = dayjs(startTime, "YYYY-MM-DD").toDate();
-    const endDateParsed = dayjs(endTime, "YYYY-MM-DD").toDate();
+    const startDateParsed = dayjs(startTime, "YYYY-MM-DD HH:mm:ss").toDate();
+    const endDateParsed = dayjs(endTime, "YYYY-MM-DD HH:mm:ss").toDate();
+    console.log(
+      `Received request for exercise: ${exerciseName}, start: ${startDateParsed}, end: ${endDateParsed}`
+    );
     if (startDateParsed > endDateParsed) {
       return HttpResponse.json(
         { error: "Start date cannot be after end date" },

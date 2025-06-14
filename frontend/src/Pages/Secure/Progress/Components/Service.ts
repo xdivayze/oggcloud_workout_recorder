@@ -14,8 +14,14 @@ export async function FetchWorkoutPlots(
     authCode: string,
     id: string,
 ) {
-  const startDateFormatted = dayjs(startDate).format("YYYY-MM-DD");
-  const endDateFormatted = dayjs(endDate).format("YYYY-MM-DD");
+  endDate.setHours(23, 59, 59, 999); // Set end date to the end of the day
+  startDate.setHours(0, 0, 0, 0); // Set start date to the beginning of the day
+
+  const layout = "YYYY-MM-DD HH:mm:ss"
+
+  const startDateFormatted = dayjs(startDate).format(layout);
+  const endDateFormatted = dayjs(endDate).format(layout);
+
   const params = new URLSearchParams({
     exercise_name: exercise,
     start_time: startDateFormatted,
@@ -23,6 +29,7 @@ export async function FetchWorkoutPlots(
   });
 
   const url = `/api/protected/get-progress?${params.toString()}`;
+  
 
   setFetching(true);
   const resp = await fetch(url, {
