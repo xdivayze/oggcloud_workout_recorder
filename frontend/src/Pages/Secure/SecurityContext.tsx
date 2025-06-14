@@ -13,7 +13,7 @@ export const authContext = createContext<SecurityContextType | null>(null);
 export default function SecurityContext({ children }: { children: ReactNode }) {
   const [authCode, setAuthCode] = useState("");
   const [expiresAt, setExpiresAt] = useState(new Date());
-  const [id, setId] = useState("");
+  const [loginID, setId] = useState("");
 
   const login = (authCode: string, expiresAt: Date, id: string) => {
     setAuthCode(authCode);
@@ -23,7 +23,7 @@ export default function SecurityContext({ children }: { children: ReactNode }) {
   const logout = () => setAuthCode("");
 
   return (
-    <authContext.Provider value={{ authCode, expiresAt, login, logout, id }}>
+    <authContext.Provider value={{ authCode, expiresAt, login, logout,  loginID }}>
       {children}
     </authContext.Provider>
   );

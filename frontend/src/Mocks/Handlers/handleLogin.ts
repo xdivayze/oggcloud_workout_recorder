@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import  { REQUEST_FIELDNAMES } from "../../Tools/constants";
+import { REQUEST_FIELDNAMES } from "../../Tools/constants";
 
 interface ILogin {
   [REQUEST_FIELDNAMES.ID]: string;
@@ -7,7 +7,7 @@ interface ILogin {
 }
 
 export default function handleLogin() {
-    return http.post("/api/user/login", async ({ request }) => {
+  return http.post("/api/user/login", async ({ request }) => {
     const data = (await request.json()) as ILogin;
     if (!data) {
       return HttpResponse.json({ status: 400 });
@@ -18,15 +18,14 @@ export default function handleLogin() {
       return HttpResponse.json({ success: false }, { status: 401 });
     }
 
-    return HttpResponse.json(
-      //TODO switch auth response to headers
-      {
-        [REQUEST_FIELDNAMES.AUTH_CODE]: "welcome_to_ogglabs",
+    return HttpResponse.json(null,{
+      status: 200,
+      headers: {
+        [REQUEST_FIELDNAMES.AUTH_CODE]: "mock-auth-code",
         [REQUEST_FIELDNAMES.EXPIRES_AT]: new Date(
-          new Date().getTime() + 30 * 60 * 1000
-        ),
+          Date.now() + 3600 * 1000
+        ).toISOString(),
       },
-      { status: 200 }
-    );
-  })
+    });
+  });
 }

@@ -46,7 +46,6 @@ func handleGenerateProgressPlot(yPadding vg.Length, startTime time.Time, endTime
 		colorSetterFunction,
 	)
 
-
 	p := plot.New()
 	p.Title.Text = fmt.Sprintf("Progress Plot for Exercise: %s ", exerciseName)
 	p.X.Label.Text = "Session Date"

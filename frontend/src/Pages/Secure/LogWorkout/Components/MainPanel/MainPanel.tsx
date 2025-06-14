@@ -6,19 +6,23 @@ import {
 } from "../MainPanelWrapper";
 import ChooseExerciseMenu from "./ChooseExerciseMenu/ChooseExerciseMenu";
 import {
-  PartialRepSchema,
-  type PartialRepArrayType,
-  type PartialRepObjectType,
+  WorkoutSetSchema,
+  type LogWorkoutRequestType,
+  type WorkoutSetType,
 } from "./types";
 import SetPartialSummary from "./SetPartialSummary";
 import { REQUEST_FIELDNAMES } from "../../../../../Tools/constants";
 import { authContext } from "../../../SecurityContext";
-
-//TODO add option to set date
-
+import { GenerateDateArray } from "../../../Progress/Components/DatePanel";
+import dayjs from "dayjs";
 
 export default function MainPanel() {
   const importedAuthContext = useContext(authContext);
+
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+  const dates = GenerateDateArray(6); // Generate an array of dates for the last 6 weeks
+  dates[0] = "Today"; // Set the first date to "Today"
 
   const {
     exerciseChooseDivRef,
@@ -27,14 +31,34 @@ export default function MainPanel() {
     weightUnitRef,
     repCountRef,
   } = useContext(MainPanelRefContext) as MainPanelRefContextType;
-  const [partialSums, setPartialSums] = useState<
-    Map<string, PartialRepObjectType>
-  >(new Map()); 
+  const [partialSums, setPartialSums] = useState<Map<string, WorkoutSetType>>(
+    new Map()
+  );
   return (
     <div
       className=" overflow-y-auto h-full w-full rounded-3xl
      bg-gray-ogg-1 p-5 flex items-center flex-col shadow-2xl"
     >
+      <div className="w-full mb-4 min-h-14 cursor-pointer">
+        <MiniPanel
+          placeholderText="Today"
+          color="bg-gray-ogg-2"
+          contentEditable={false}
+          dropdownFeatures={{
+            items: dates,
+            onSelect: (item: string) => {
+              if (item !== dayjs(selectedDate).format("YYYY-MM-DD")){
+                setPartialSums(new Map()); // Clear partial sums when date changes
+              } 
+              if (item === "Today") {
+                setSelectedDate(new Date());
+              } else {
+                setSelectedDate(new Date(item));
+              }
+            },
+          }}
+        />
+      </div>
       <div className="min-h-14 w-full mb-4 cursor-pointer ">
         <ChooseExerciseMenu />
       </div>
@@ -49,7 +73,6 @@ export default function MainPanel() {
             dropdownFeatures={{
               items: Array.from({ length: 9 }, (_, i) => (1 + i).toString()),
               onSelect(item) {
-                //TODO add feature to store old set partial sums and only show current set's partial sums
                 setNumberDivRef.current.innerText = item;
               },
             }}
@@ -60,7 +83,7 @@ export default function MainPanel() {
         <div
           onClick={(e) => {
             e.preventDefault();
-            const psumObj = PartialRepSchema.parse({
+            const psumObj = WorkoutSetSchema.parse({
               repCount: Number(repCountRef.current.innerText.trim()),
               setNo: Number(setNumberDivRef.current.innerText.trim()),
               weight: Number(repWeightRef.current.innerText.trim()),
@@ -71,7 +94,7 @@ export default function MainPanel() {
               const newMap = new Map(prev);
 
               newMap.set(
-                Math.floor(Math.random() * 10 + 1).toString(),
+                Math.floor(Math.random() * 10000 + 1).toString(),
                 psumObj
               );
               return newMap;
@@ -116,38 +139,32 @@ export default function MainPanel() {
       </div>
       <div className="flex flex-col w-full mt-7">
         {[...partialSums.entries()].map(([k, c]) => (
-          <div
-            key={k}
-            onClick={() => {
-              setPartialSums((prev) => {
-                const newMap = new Map(prev);
-                newMap.delete(k);
-                return newMap;
-              });
-            }}
-            className="h-[70px] w-full mb-3"
-          >
+          <div key={k} className="h-[70px] w-full mb-3">
             <SetPartialSummary
+              setPartialSums={setPartialSums}
+              k={k}
               repCount={c.repCount}
               weight={c.weight}
               unit={c.unit}
               exerciseName={c.exerciseName}
+              setNo={c.setNo}
             />
           </div>
         ))}
       </div>
       <div
         onClick={() => {
-          const body: PartialRepArrayType = {
-            partialSummaries: [...partialSums.values()],
+          const body: LogWorkoutRequestType = {
+            sets: [...partialSums.values()],
+            date: selectedDate, //automatically converted to ISO string by stringify
           };
-          fetch("/api/user/log-workout", {
+          fetch("/api/protected/log-workout", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               [REQUEST_FIELDNAMES.AUTH_CODE]:
                 importedAuthContext?.authCode as string,
-              [REQUEST_FIELDNAMES.ID]: importedAuthContext?.id as string,
+              [REQUEST_FIELDNAMES.ID]: importedAuthContext?.loginID as string,
             },
             body: JSON.stringify(body),
           })

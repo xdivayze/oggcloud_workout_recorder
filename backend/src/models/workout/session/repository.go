@@ -33,3 +33,11 @@ func GetAllByUserID(db *gorm.DB, userID uint) ([]Session, error) {
 	}
 	return sessions, nil
 }
+
+func GetAllByUserIDAndDateRange(db *gorm.DB, userID uint, startDate, endDate time.Time) ([]Session, error) {
+	var sessions []Session
+	if err := db.Where("user_id = ? AND date BETWEEN ? AND ?", userID, startDate, endDate).Find(&sessions).Error; err != nil {
+		return nil, err
+	}
+	return sessions, nil
+}

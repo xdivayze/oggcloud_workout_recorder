@@ -38,23 +38,24 @@ func handleUserNotFound(user *user_module.User, loginID, password string, db *go
 	return nil
 }
 
-func appendAuthCodeToUser(user *user_module.User, db *gorm.DB) (string, error) {
+func appendAuthCodeToUser(user *user_module.User, db *gorm.DB) (string, time.Time, error) {
 	bytes := make([]byte, auth_code.CODE_LENGTH)
 	if _, err := rand.Read(bytes); err != nil {
-		return "", fmt.Errorf("error generating random bytes for auth code: %w", err)
+		return "",time.Now() , fmt.Errorf("error generating random bytes for auth code: %w", err)
 	}
 	authCode := hex.EncodeToString(bytes) // Convert the random bytes to a hexadecimal string
+	expiresAt := time.Now().Add(auth_code.CODE_VALIDATION_LENGTH_MIN * time.Minute) // Set the expiration time to 60 minutes from now
 
 	// Append the auth code to the user's AuthCodes slice
 	newAuthCode := auth_code.AuthCode{
 		Code:      authCode,
-		ExpiresAt: time.Now().Add(auth_code.CODE_VALIDATION_LENGTH_MIN * time.Minute), // Set the expiration time to 60 minutes from now
+		ExpiresAt: expiresAt,
 	}
 
 	// Append the new auth code to the user's AuthCodes association
 	if err := db.Model(user).Association("AuthCodes").Append(&newAuthCode); err != nil {
-		return "", fmt.Errorf("error appending auth code to user: %w", err)
+		return "",time.Now() ,fmt.Errorf("error appending auth code to user: %w", err)
 	}
-	return authCode, nil
+	return authCode, expiresAt, nil
 
 }
