@@ -64,7 +64,7 @@ func TestLoginUserFound(t *testing.T) {
 	hashedPassword, err := login.HashPassword(password)
 	require.Nil(err, "Error hashing password")
 	testUser := user.User{
-		LoginID: loginID,
+		LoginID:        loginID,
 		BCryptPassword: hashedPassword,
 	}
 	require.Nil(db.DB.Create(&testUser).Error, "Failed to create test user")
@@ -89,4 +89,6 @@ func TestLoginUserFound(t *testing.T) {
 
 	//check authCode in header
 	require.NotEmpty(resp.Header().Get(auth_code.AUTH_CODE_FIELDNAME), "Expected auth code to be present in response header")
+	require.NotEmpty(resp.Header().Get(auth_code.EXPIRES_AT_FIELDNAME), "Expected expires at to be present in response header")
+
 }

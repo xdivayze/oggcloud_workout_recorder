@@ -22,24 +22,27 @@ export async function DoLogin(id: string, password: string) {
     throw new Error("request returned non-200 code: " + resp.status);
   }
 
-  const respBody = await resp.json();
-  if (!(REQUEST_FIELDNAMES.AUTH_CODE in respBody)) {
+  const headers = resp.headers;
+  if (!headers) {
+    throw new Error("Response headers are null");
+  }
+
+  const authCode = headers.get(REQUEST_FIELDNAMES.AUTH_CODE);
+  if (!authCode) {
     throw new Error(
-      REQUEST_FIELDNAMES.AUTH_CODE + " does not exist on response body"
+      REQUEST_FIELDNAMES.AUTH_CODE + " does not exist on response headers"
     );
   }
-  if (!(REQUEST_FIELDNAMES.EXPIRES_AT in respBody)) {
+
+  const expiresAt = headers.get(REQUEST_FIELDNAMES.EXPIRES_AT);
+  if (!expiresAt) {
     throw new Error(
-      REQUEST_FIELDNAMES.EXPIRES_AT + " does not exist on response body"
+      REQUEST_FIELDNAMES.EXPIRES_AT + " does not exist on response headers"
     );
   }
 
   return {
-    [REQUEST_FIELDNAMES.AUTH_CODE]: respBody[
-      REQUEST_FIELDNAMES.AUTH_CODE
-    ] as string,
-    [REQUEST_FIELDNAMES.EXPIRES_AT]: respBody[
-      REQUEST_FIELDNAMES.EXPIRES_AT
-    ] as Date,
+    [REQUEST_FIELDNAMES.AUTH_CODE]: authCode,
+    [REQUEST_FIELDNAMES.EXPIRES_AT]: new Date(expiresAt),
   };
 }

@@ -5,6 +5,7 @@ import (
 	"backend/src/models/auth_code"
 	"backend/src/models/user"
 	"errors"
+	"time"
 
 	"net/http"
 
@@ -46,7 +47,7 @@ func HandleLogin(c *gin.Context) {
 		return
 	}
 
-	authCode, err := appendAuthCodeToUser(&userModel, db.DB) // generate and append auth code to user
+	authCode, expiresAt, err := appendAuthCodeToUser(&userModel, db.DB) // generate and append auth code to user
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error appending auth code to user"})
@@ -59,7 +60,8 @@ func HandleLogin(c *gin.Context) {
 		return
 	}
 
-	c.Writer.Header().Set(auth_code.AUTH_CODE_FIELDNAME, authCode) // set auth code in header
+	c.Writer.Header().Set(auth_code.AUTH_CODE_FIELDNAME, authCode)                        // set auth code in header
+	c.Writer.Header().Set(auth_code.EXPIRES_AT_FIELDNAME, expiresAt.Format(time.RFC3339)) // set expires at in header
 
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
 
