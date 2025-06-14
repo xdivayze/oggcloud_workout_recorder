@@ -31,7 +31,7 @@ func HandleGetProgress(c *gin.Context) {
 		return
 	}
 	// Define the layout for parsing the time strings
-	layout := "2006-01-02 15:04:05"
+	layout := "2006-01-02"
 	// Parse the start and end times
 	startTimeParsed, err := time.Parse(layout, startTime)
 	if err != nil {

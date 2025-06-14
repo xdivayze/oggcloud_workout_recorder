@@ -14,8 +14,8 @@ export async function FetchWorkoutPlots(
     authCode: string,
     id: string,
 ) {
-  const startDateFormatted = dayjs(startDate).format("YYYY-MM-DD HH:mm:ss");
-  const endDateFormatted = dayjs(endDate).format("YYYY-MM-DD HH:mm:ss");
+  const startDateFormatted = dayjs(startDate).format("YYYY-MM-DD");
+  const endDateFormatted = dayjs(endDate).format("YYYY-MM-DD");
   const params = new URLSearchParams({
     exercise_name: exercise,
     start_time: startDateFormatted,

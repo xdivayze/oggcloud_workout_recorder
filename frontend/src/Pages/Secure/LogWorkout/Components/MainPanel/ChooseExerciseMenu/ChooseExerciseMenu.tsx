@@ -33,11 +33,13 @@ export default function ChooseExerciseMenu({
       setContentEditable(true);
     } else {
       selectedItem = item; // if not custom fallback to default item
-      if (itemSelectEffectCallback) { //if a callback is provided, call it with the selected item
-        itemSelectEffectCallback(selectedItem);
-      }
     }
+    
     setSelected(selectedItem);
+    if (itemSelectEffectCallback) {
+      //if a callback is provided, call it with the selected item
+      itemSelectEffectCallback(selected);
+    }
   };
 
   useEffect(() => {

@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { http, HttpResponse } from "msw";
 
 export default function handleGetProgress() {
@@ -13,8 +14,8 @@ export default function handleGetProgress() {
         { status: 400 }
       );
     }
-    const startDateParsed = new Date(`${startTime}T00:00:00`);
-    const endDateParsed = new Date(`${endTime}T23:59:59`);
+    const startDateParsed = dayjs(startTime, "YYYY-MM-DD").toDate();
+    const endDateParsed = dayjs(endTime, "YYYY-MM-DD").toDate();
     if (startDateParsed > endDateParsed) {
       return HttpResponse.json(
         { error: "Start date cannot be after end date" },
@@ -22,8 +23,7 @@ export default function handleGetProgress() {
       );
     }
 
-    const dummyImageUrl =
-      "/mock-images/intraset_heatmap_test.png";
+    const dummyImageUrl = "/mock-images/intraset_heatmap_test.png";
     const resp = await fetch(dummyImageUrl);
     const arrayBuffer = await resp.arrayBuffer();
 

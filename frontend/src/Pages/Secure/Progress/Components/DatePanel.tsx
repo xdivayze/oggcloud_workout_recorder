@@ -1,7 +1,8 @@
 import { useRef } from "react";
 import MiniPanel from "../../LogWorkout/Components/MainPanel/MiniPanel";
 
-export default function DatePanel({
+ //TODO fetch dates from server up to nWeeksBack weeks ago
+export default function DatePanel({ 
   nWeeksBack,
   text,
   onChange,

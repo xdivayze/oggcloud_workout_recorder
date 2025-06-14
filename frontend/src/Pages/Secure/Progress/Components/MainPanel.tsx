@@ -4,6 +4,7 @@ import ChooseExerciseMenu from "../../LogWorkout/Components/MainPanel/ChooseExer
 import DatePanel from "./DatePanel";
 import { FetchWorkoutPlots } from "./Service";
 import { authContext } from "../../SecurityContext";
+import MiniPanel from "../../LogWorkout/Components/MainPanel/MiniPanel";
 
 export default function MainPanel() {
   const exerciseChooseDivRef = useRef<HTMLDivElement | null>(
@@ -12,18 +13,13 @@ export default function MainPanel() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [fetching, setFetching] = useState<boolean>(false);
-  const [selectedExercise, setSelectedExercise] = useState<string>("");
   const [imageSrcs, setImageSrcs] = useState<Array<string> | null>(null);
+  const [selectedExercise, setSelectedExercise] = useState<string | null>("");
   const authContextFetched = useContext(authContext);
 
-  useEffect(() => {
-    // Fetch data when startDate, endDate, or exercise is selected
-    if (
-      startDate &&
-      endDate &&
-      selectedExercise &&
-      !fetching
-    ) {
+  const onFetchClick = () => {
+    const selectedExercise = exerciseChooseDivRef.current?.innerText;
+    if (startDate && endDate && selectedExercise && !fetching) {
       FetchWorkoutPlots(
         startDate,
         endDate,
@@ -34,7 +30,7 @@ export default function MainPanel() {
         authContextFetched?.loginID as string
       );
     }
-  }, [selectedExercise, startDate, endDate]);
+  };
 
   return (
     <div
@@ -43,16 +39,16 @@ export default function MainPanel() {
     >
       <div className=" min-h-14 w-full mb-4 cursor-pointer ">
         <ChooseExerciseMenu
-          itemSelectEffectCallback={(item) => {
+          itemSelectEffectCallback={(item: string) => {
             setSelectedExercise(item);
-            setImageSrcs(null);
-          }} // Reset images when a new exercise is selected}
+            setImageSrcs(null); // Reset images when a new exercise is selected
+          }}
           externalExerciseChooseDivRef={exerciseChooseDivRef}
         />
       </div>
       <div className="min-h-14 w-full mb-4  flex flex-row justify-between items-center">
         <div className="w-1/2 mr-1 h-full ">
-          <DatePanel
+          <DatePanel 
             nWeeksBack={6}
             text="Start Date"
             onChange={(d) => setStartDate(d)}
@@ -65,6 +61,16 @@ export default function MainPanel() {
             onChange={(d) => setEndDate(d)}
           />
         </div>
+      </div>
+      <div
+        className="w-full min-h-14 mb-4 cursor-pointer"
+        onClick={onFetchClick}
+      >
+        <MiniPanel
+          contentEditable={false}
+          placeholderText="Fetch"
+          color="bg-blue-ogg-0 text-white"
+        />
       </div>
       <div
         className="w-full items-center flex flex-col flex-grow bg-gray-ogg-2
