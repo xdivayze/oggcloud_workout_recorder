@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState, type RefObject } from "react";
+import { useContext, useRef, useState, type RefObject } from "react";
 import ChooseExerciseMenu from "../../LogWorkout/Components/MainPanel/ChooseExerciseMenu/ChooseExerciseMenu";
 
 import DatePanel from "./DatePanel";
@@ -48,7 +48,7 @@ export default function MainPanel() {
       </div>
       <div className="min-h-14 w-full mb-4  flex flex-row justify-between items-center">
         <div className="w-1/2 mr-1 h-full ">
-          <DatePanel 
+          <DatePanel
             nWeeksBack={6}
             text="Start Date"
             onChange={(d) => setStartDate(d)}
