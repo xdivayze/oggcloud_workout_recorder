@@ -14,7 +14,7 @@ export default function MainPanel() {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [fetching, setFetching] = useState<boolean>(false);
   const [imageSrcs, setImageSrcs] = useState<Array<string> | null>(null);
-  const [selectedExercise, setSelectedExercise] = useState<string | null>("");
+  const [_, setSelectedExercise] = useState<string | null>("");
   const authContextFetched = useContext(authContext);
 
   const onFetchClick = () => {

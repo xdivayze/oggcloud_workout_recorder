@@ -5,7 +5,10 @@ import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
 import { worker } from "./Mocks/browser.ts";
 
-await worker.start();
+if (import.meta.env.DEV) {
+  await worker.start();
+  console.log("Mock Service Worker is enabled.");
+}
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
