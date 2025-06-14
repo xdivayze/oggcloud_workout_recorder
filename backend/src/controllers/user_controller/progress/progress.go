@@ -31,7 +31,7 @@ func HandleGetProgress(c *gin.Context) {
 		return
 	}
 	// Define the layout for parsing the time strings
-	layout := "2006-01-02 15:04:05"
+	layout := "2006-01-02"
 	// Parse the start and end times
 	startTimeParsed, err := time.Parse(layout, startTime)
 	if err != nil {
@@ -99,6 +99,6 @@ func HandleGetProgress(c *gin.Context) {
 	}
 	// Set the content type to image/png and return the image data
 	c.Header("Content-Type", "image/png")
-	c.Data(200, "image/png", img.Bytes())
+	c.Data(200, "image/png", img.Bytes()) //TODO switch to multipart/form-data if needed
 
 }

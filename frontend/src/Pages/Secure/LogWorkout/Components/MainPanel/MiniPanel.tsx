@@ -24,9 +24,9 @@ export default function MiniPanel({
   const [isOpen, setIsOpen] = useState(false);
   let count = 0;
   return (
-    <div className="h-full w-full relative inline-block">
+    <div className="h-full w-full relative inline-block border border-gray-300">
       <div
-        className={`h-full w-full ${color} rounded-2xl font-inter 
+        className={`h-full w-full ${color} rounded-2xl font-inter shadow-black/30 shadow-sm
         font-light px-2 pb-1 text-2xl items-center justify-center flex`}
         contentEditable={contentEditable}
         suppressContentEditableWarning
@@ -53,7 +53,7 @@ export default function MiniPanel({
             count += 1;
             return (
               <div
-                className={`${
+                className={` cursor-pointer ${
                   count % 2 == 0 ? "bg-gray-ogg-1" : "bg-gray-ogg-2"
                 }`}
                 key={item}

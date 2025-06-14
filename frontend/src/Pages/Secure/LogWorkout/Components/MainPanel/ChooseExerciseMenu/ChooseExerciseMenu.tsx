@@ -6,29 +6,40 @@ const CUSTOM_WORKOUT_MENU_ITEM_ONCLICK = "Enter Workout Name";
 const PLACEHOLDER_TEXT = "Choose Exercise";
 
 //TODO show best results from fetched exercises as it is being searched
+//TODO this can use some optimization
 
 export default function ChooseExerciseMenu({
   includeCustomWorkout = true,
-  externalExerciseChooseDivRef 
+  externalExerciseChooseDivRef,
+  itemSelectEffectCallback,
 }: {
   includeCustomWorkout?: boolean;
-  externalExerciseChooseDivRef?: RefObject<HTMLDivElement>
+  externalExerciseChooseDivRef?: RefObject<HTMLDivElement>;
+  itemSelectEffectCallback?: (item: string) => void;
 }) {
-  let exerciseChooseDivRef = externalExerciseChooseDivRef ? externalExerciseChooseDivRef : useContext(MainPanelRefContext)?.exerciseChooseDivRef;
-    
+  let exerciseChooseDivRef = externalExerciseChooseDivRef
+    ? externalExerciseChooseDivRef
+    : useContext(MainPanelRefContext)?.exerciseChooseDivRef;
+
   const [selected, setSelected] = useState("");
   const [contentEditable, setContentEditable] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const onSelect = (item: string) => {
     let selectedItem = "";
-    if (item.trim() === CUSTOM_WORKOUT_MENU_ITEM) { //set the placeholder text custom workout onclick item
+    if (item.trim() === CUSTOM_WORKOUT_MENU_ITEM) {
+      //set the placeholder text custom workout onclick item
       selectedItem = CUSTOM_WORKOUT_MENU_ITEM_ONCLICK;
       setContentEditable(true);
     } else {
       selectedItem = item; // if not custom fallback to default item
     }
+    
     setSelected(selectedItem);
+    if (itemSelectEffectCallback) {
+      //if a callback is provided, call it with the selected item
+      itemSelectEffectCallback(selected);
+    }
   };
 
   useEffect(() => {
@@ -39,7 +50,7 @@ export default function ChooseExerciseMenu({
         exerciseChooseDivRef.current.innerText.trim() ===
           CUSTOM_WORKOUT_MENU_ITEM_ONCLICK
       ) {
-        setSelected(PLACEHOLDER_TEXT)
+        setSelected(PLACEHOLDER_TEXT);
       }
     }
   }, [contentEditable]);
