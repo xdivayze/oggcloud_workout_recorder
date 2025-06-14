@@ -13,11 +13,16 @@ import {
 import SetPartialSummary from "./SetPartialSummary";
 import { REQUEST_FIELDNAMES } from "../../../../../Tools/constants";
 import { authContext } from "../../../SecurityContext";
-
-//TODO add option to set date
+import { GenerateDateArray } from "../../../Progress/Components/DatePanel";
+import dayjs from "dayjs";
 
 export default function MainPanel() {
   const importedAuthContext = useContext(authContext);
+
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+  const dates = GenerateDateArray(6); // Generate an array of dates for the last 6 weeks
+  dates[0] = "Today"; // Set the first date to "Today"
 
   const {
     exerciseChooseDivRef,
@@ -34,6 +39,26 @@ export default function MainPanel() {
       className=" overflow-y-auto h-full w-full rounded-3xl
      bg-gray-ogg-1 p-5 flex items-center flex-col shadow-2xl"
     >
+      <div className="w-full mb-4 min-h-14 cursor-pointer">
+        <MiniPanel
+          placeholderText="Today"
+          color="bg-gray-ogg-2"
+          contentEditable={false}
+          dropdownFeatures={{
+            items: dates,
+            onSelect: (item: string) => {
+              if (item !== dayjs(selectedDate).format("YYYY-MM-DD")){
+                setPartialSums(new Map()); // Clear partial sums when date changes
+              } 
+              if (item === "Today") {
+                setSelectedDate(new Date());
+              } else {
+                setSelectedDate(new Date(item));
+              }
+            },
+          }}
+        />
+      </div>
       <div className="min-h-14 w-full mb-4 cursor-pointer ">
         <ChooseExerciseMenu />
       </div>
@@ -48,7 +73,6 @@ export default function MainPanel() {
             dropdownFeatures={{
               items: Array.from({ length: 9 }, (_, i) => (1 + i).toString()),
               onSelect(item) {
-                //TODO add feature to store old set partial sums and only show current set's partial sums
                 setNumberDivRef.current.innerText = item;
               },
             }}
@@ -132,7 +156,7 @@ export default function MainPanel() {
         onClick={() => {
           const body: LogWorkoutRequestType = {
             sets: [...partialSums.values()],
-            date: new Date(),
+            date: selectedDate, //automatically converted to ISO string by stringify
           };
           fetch("/api/protected/log-workout", {
             method: "POST",

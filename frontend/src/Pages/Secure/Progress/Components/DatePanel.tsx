@@ -19,7 +19,7 @@ export default function DatePanel({
       contentEditable={false}
       ref={dateRef}
       dropdownFeatures={{
-        items: generateDateArray(nWeeksBack),
+        items: GenerateDateArray(nWeeksBack),
         onSelect: (item: string) => {
           // Convert the selected date string back to a Date object
           if (!dateRef.current) throw new Error("dateRef is not set");
@@ -33,7 +33,7 @@ export default function DatePanel({
   );
 }
 
-function generateDateArray(nWeeks: number): string[] {
+export function GenerateDateArray(nWeeks: number): string[] {
   const dateArray: string[] = [];
   const today = new Date();
   for (let i = 0; i < nWeeks; i++) {
