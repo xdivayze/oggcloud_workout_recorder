@@ -142,7 +142,7 @@ export default function MainPanel() {
             sets: [...partialSums.values()],
             date: new Date(),
           };
-          fetch("/api/user/log-workout", {
+          fetch("/api/protected/log-workout", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
