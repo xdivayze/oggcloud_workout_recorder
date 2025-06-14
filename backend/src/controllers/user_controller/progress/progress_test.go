@@ -60,19 +60,18 @@ func TestHandleGenerateProgressShouldSucceed(t *testing.T) {
 	setID := 5
 
 	testRep := repetition.Repetition{
-				ExerciseID:       testExercise.ID,
-				SetID:            uint(setID),
-				Weight:           100,
-				Unit:             "kg",
-				RepPositionInSet: 1,
-			
-		}
-	
+		ExerciseID:       testExercise.ID,
+		SetID:            uint(setID),
+		Weight:           100,
+		Unit:             "kg",
+		RepPositionInSet: 1,
+	}
+
 	testSet := &set.Set{
 		ID:         uint(setID),
 		ExerciseID: testExercise.ID,
 		SessionID:  testSession.ID,
-		SetNumber: 1,
+		SetNumber:  1,
 	}
 	require.Nil(db.DB.Model(testSession).Association("Sets").Append(testSet))
 	require.Nil(db.DB.Model(testSet).Association("Reps").Append(&testRep), "Failed to append repetitions to the set")
@@ -84,7 +83,7 @@ func TestHandleGenerateProgressShouldSucceed(t *testing.T) {
 		progress.HandleGetProgress(c)
 	})
 
-	req := httptest.NewRequest("GET", "/progress?exercise_name=bench%20press&start_time=2025-06-08&end_time=2025-06-15", nil)
+	req := httptest.NewRequest("GET", "/progress?exercise_name=bench%20press&start_time=2025-06-08%2000:00:00&end_time=2025-06-15%2000:00:00", nil)
 	req.Header.Set(auth_code.AUTH_CODE_FIELDNAME, "test_auth_code") // Set the auth code in the header
 	req.Header.Set(user.LoginIDKey, testUser.LoginID)
 	resp := httptest.NewRecorder()

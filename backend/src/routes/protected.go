@@ -13,7 +13,7 @@ func protectedRoutes(rg *gin.RouterGroup) {
 	protected := rg.Group("/protected")
 	protected.Use(middleware.AuthMiddleware()) // Apply the authentication middleware
 	{
-		protected.GET("/log-workout", log_workout.HandleLogWorkout)
+		protected.POST("/log-workout", log_workout.HandleLogWorkout)
 		protected.GET("/get-progress", progress.HandleGetProgress)
 	}
 
