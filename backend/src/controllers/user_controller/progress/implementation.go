@@ -64,7 +64,7 @@ func handleGenerateProgressPlot(yPadding vg.Length, startTime time.Time, endTime
 	p.Y.Min = 0
 	p.Y.Max = float64(heatmap.MaxReps + 3)
 
-	img := vgimg.New(500, 500)
+	img := vgimg.New(500, maxHeight + 50)
 	dc := draw.New(img)
 	p.Draw(dc)
 
