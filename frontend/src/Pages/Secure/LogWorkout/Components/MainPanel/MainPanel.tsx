@@ -21,7 +21,7 @@ export default function MainPanel() {
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
-  const dates = GenerateDateArray(6); // Generate an array of dates for the last 6 weeks
+  const dates = GenerateDateArray(25, 1); // Generate an array of dates for the last 6 weeks
   dates[0] = "Today"; // Set the first date to "Today"
 
   const {
@@ -129,11 +129,18 @@ export default function MainPanel() {
             }}
           />
         </div>
-        <div className="min-h-11 w-1/6">
+        <div className="min-h-11 w-1/6 cursor-pointer">
           <MiniPanel
             ref={repCountRef}
             placeholderText="12"
             color="bg-gray-ogg-2"
+            contentEditable={false}
+            dropdownFeatures={{
+              items: Array.from({ length: 20 }, (_, i) => (1 + i).toString()),
+              onSelect(item) {
+                repCountRef.current.innerText = item;
+              },
+            }}
           />
         </div>
       </div>
