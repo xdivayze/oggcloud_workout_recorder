@@ -57,9 +57,11 @@ func TestLogWorkoutWorkoutExistsShouldSucceed(t *testing.T) {
 	setID := 5
 
 	require.Nil(db.DB.Model(testSession).Association("Sets").Append(&set.Set{
-		ID:         uint(setID),
-		ExerciseID: testExercise.ID,
-		SessionID:  testSession.ID,
+		ID:           uint(setID),
+		ExerciseID:   testExercise.ID,
+		SessionID:    testSession.ID,
+		ExerciseName: testExercise.Name,
+		UserID:       testUser.ID,
 		Reps: []repetition.Repetition{
 			{
 				ExerciseID:       testExercise.ID,

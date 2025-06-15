@@ -6,6 +6,7 @@ require (
 	github.com/gin-gonic/gin v1.10.1
 	github.com/joho/godotenv v1.5.1
 	golang.org/x/crypto v0.39.0
+	gonum.org/v1/plot v0.16.0
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/driver/sqlite v1.6.0
 	gorm.io/gorm v1.30.0
@@ -14,13 +15,12 @@ require (
 require (
 	codeberg.org/go-fonts/liberation v0.5.0 // indirect
 	codeberg.org/go-latex/latex v0.1.0 // indirect
-	codeberg.org/go-pdf/fpdf v0.10.0 // indirect
+	codeberg.org/go-pdf/fpdf v0.11.1 // indirect
 	git.sr.ht/~sbinet/gg v0.6.0 // indirect
 	github.com/ajstarks/svgo v0.0.0-20211024235047-1546f124cd8b // indirect
 	github.com/campoy/embedmd v1.0.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
-	golang.org/x/image v0.25.0 // indirect
-	gonum.org/v1/plot v0.16.0 // indirect
+	golang.org/x/image v0.28.0 // indirect
 )
 
 require (
@@ -52,8 +52,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
-	github.com/ugorji/go/codec v1.2.14 // indirect
-	github.com/xdivayze/oggcloud_workout_plotter v0.0.1
+	github.com/ugorji/go/codec v1.3.0 // indirect
+	github.com/xdivayze/oggcloud_workout_plotter v0.0.3-0.20250615142636-b8d2e35be255
 	github.com/xdivayze/oggcloud_workout_recorder v0.0.0-20250608140006-fdd9d48047d1 // indirect
 	golang.org/x/arch v0.18.0 // indirect
 	golang.org/x/net v0.41.0 // indirect
