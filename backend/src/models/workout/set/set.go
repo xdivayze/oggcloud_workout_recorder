@@ -1,6 +1,9 @@
 package set
 
-import "backend/src/models/workout/repetition"
+import (
+	"backend/src/models/workout/repetition"
+	"time"
+)
 
 // this struct represents a set of repetitions in a workout
 // it is used to group repetitions together, e.g. 3 sets of 10 repetitions
@@ -11,5 +14,7 @@ type Set struct {
 	ExerciseID uint                    `json:"exercise_id" gorm:"not null"`                                                 // Foreign key to Exercise
 	Reps       []repetition.Repetition `json:"reps" gorm:"foreignKey:SetID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"` // Repetitions in this set
 	SessionID  uint                    `json:"session_id" gorm:"not null"`                                                  // Foreign key to Session
-	SetNumber uint  				`json:"set_number" gorm:"not null"`                                                   // The number of this set in the session
+	SetNumber  uint                    `json:"set_number" gorm:"not null"`                                                  // The number of this set in the session
+	CreatedAt  time.Time               `json:"created_at" gorm:"autoCreateTime"`                                            // Timestamp when the set was created
+	UserID     uint                    `json:"user_id" gorm:"not null"`                                                     // Foreign key to User
 }
