@@ -12,6 +12,7 @@ import (
 type Set struct {
 	ID         uint                    `json:"id" gorm:"primaryKey"`                                                        // Unique identifier for the set
 	ExerciseID uint                    `json:"exercise_id" gorm:"not null"`                                                 // Foreign key to Exercise
+	ExerciseName string                  `json:"exercise_name" gorm:"not null"`                                              // Name of the exercise for this set
 	Reps       []repetition.Repetition `json:"reps" gorm:"foreignKey:SetID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"` // Repetitions in this set
 	SessionID  uint                    `json:"session_id" gorm:"not null"`                                                  // Foreign key to Session
 	SetNumber  uint                    `json:"set_number" gorm:"not null"`                                                  // The number of this set in the session

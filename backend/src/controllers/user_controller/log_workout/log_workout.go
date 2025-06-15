@@ -74,6 +74,7 @@ func HandleLogWorkout(c *gin.Context) {
 					UserID:     user.ID,
 					SessionID:  retrievedSession.ID,
 					ExerciseID: retrievedExercise.ID,
+					ExerciseName: retrievedExercise.Name,
 					SetNumber:  uint(set.SetNo),
 					Reps:       []repetition.Repetition{}, // Initialize with an empty slice
 				}

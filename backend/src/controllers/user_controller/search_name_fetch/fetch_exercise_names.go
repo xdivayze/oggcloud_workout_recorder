@@ -23,7 +23,7 @@ func HandleFetchExerciseNames(c *gin.Context) {
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// If no sets are found, return an empty list
-			c.JSON(200, gin.H{"exercise_names": []string{}})
+			c.JSON(404, gin.H{"exercise_names": []string{}})
 			return
 		}
 		c.JSON(500, gin.H{"error": "failed to retrieve sets"})
