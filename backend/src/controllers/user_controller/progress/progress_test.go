@@ -62,7 +62,7 @@ func TestHandleGenerateProgressShouldSucceed(t *testing.T) {
 	testRep := repetition.Repetition{
 		ExerciseID:       testExercise.ID,
 		SetID:            uint(setID),
-		Weight:           100,
+		Weight:           20,
 		Unit:             "kg",
 		RepPositionInSet: 1,
 	}
