@@ -24,8 +24,9 @@ export default function MainPanel() {
   const dates = GenerateDateArray(25, 1); // Generate an array of dates for the last 6 weeks
   dates[0] = "Today"; // Set the first date to "Today"
 
+  const [chosenExercise, setChosenExercise] = useState<string>("");
+
   const {
-    exerciseChooseDivRef,
     setNumberDivRef,
     repWeightRef,
     weightUnitRef,
@@ -47,9 +48,9 @@ export default function MainPanel() {
           dropdownFeatures={{
             items: dates,
             onSelect: (item: string) => {
-              if (item !== dayjs(selectedDate).format("YYYY-MM-DD")){
+              if (item !== dayjs(selectedDate).format("YYYY-MM-DD")) {
                 setPartialSums(new Map()); // Clear partial sums when date changes
-              } 
+              }
               if (item === "Today") {
                 setSelectedDate(new Date());
               } else {
@@ -60,7 +61,9 @@ export default function MainPanel() {
         />
       </div>
       <div className="min-h-14 w-full mb-4 cursor-pointer ">
-        <ChooseExerciseMenu />
+        <ChooseExerciseMenu
+          itemSelectEffectCallback={(item) => setChosenExercise(item.trim())}
+        />
       </div>
       <div className="flex-row cursor-pointer justify-between items-center pl-1 flex w-full font-inter font-light text-2xl mb-4 ">
         <div> Current Set</div>
@@ -88,7 +91,7 @@ export default function MainPanel() {
               setNo: Number(setNumberDivRef.current.innerText.trim()),
               weight: Number(repWeightRef.current.innerText.trim()),
               unit: weightUnitRef.current.innerText.trim(),
-              exerciseName: exerciseChooseDivRef.current.innerText.trim(),
+              exerciseName: chosenExercise,
             });
             setPartialSums((prev) => {
               const newMap = new Map(prev);
