@@ -1,79 +1,67 @@
-import { useContext, useEffect, useState, type RefObject } from "react";
-import { MainPanelRefContext } from "../../MainPanelWrapper";
+import { useEffect, useState, type FormEvent } from "react";
+import { fetchExerciseList } from "./Service";
 
-const CUSTOM_WORKOUT_MENU_ITEM = "Enter Custom Workout";
-const CUSTOM_WORKOUT_MENU_ITEM_ONCLICK = "Enter Workout Name";
 const PLACEHOLDER_TEXT = "Choose Exercise";
 
-//TODO show best results from fetched exercises as it is being searched
-//TODO this can use some optimization
-
 export default function ChooseExerciseMenu({
-  includeCustomWorkout = true,
-  externalExerciseChooseDivRef,
   itemSelectEffectCallback,
 }: {
-  includeCustomWorkout?: boolean;
-  externalExerciseChooseDivRef?: RefObject<HTMLDivElement>;
-  itemSelectEffectCallback?: (item: string) => void;
+  itemSelectEffectCallback?: (item: string) => void; //caller function should set own state through callback
 }) {
-  let exerciseChooseDivRef = externalExerciseChooseDivRef
-    ? externalExerciseChooseDivRef
-    : useContext(MainPanelRefContext)?.exerciseChooseDivRef;
-
-  const [selected, setSelected] = useState("");
-  const [contentEditable, setContentEditable] = useState(false);
+  const [selected, setSelected] = useState(PLACEHOLDER_TEXT);
   const [isOpen, setIsOpen] = useState(false);
+  const [items, setItems] = useState<string[]>([]);
 
   const onSelect = (item: string) => {
-    let selectedItem = "";
-    if (item.trim() === CUSTOM_WORKOUT_MENU_ITEM) {
-      //set the placeholder text custom workout onclick item
-      selectedItem = CUSTOM_WORKOUT_MENU_ITEM_ONCLICK;
-      setContentEditable(true);
-    } else {
-      selectedItem = item; // if not custom fallback to default item
-    }
-    
-    setSelected(selectedItem);
+    setSelected(item);
     if (itemSelectEffectCallback) {
       //if a callback is provided, call it with the selected item
       itemSelectEffectCallback(selected);
     }
   };
 
-  useEffect(() => {
-    if (exerciseChooseDivRef?.current) {
-      exerciseChooseDivRef.current.focus();
-      if (
-        !contentEditable && //if custom workout is selected but a custom workout isn't entered and div is blurred, fall back to default placeholder
-        exerciseChooseDivRef.current.innerText.trim() ===
-          CUSTOM_WORKOUT_MENU_ITEM_ONCLICK
-      ) {
-        setSelected(PLACEHOLDER_TEXT);
-      }
-    }
-  }, [contentEditable]);
+  const onInput = (e: FormEvent<HTMLDivElement>) => {
+    
+    setItems([]);
+    const target = e.target as HTMLDivElement;
+    const text = target.innerText;
+    fetchExerciseList(text)
+      .then((v) => {
+        setItems(v);
+      })
+      .catch((e) => console.error(e))
+      .finally(() => {
+        setItems((prev) => [text, ...prev]);
+      });
 
-  const items = ["Fetched Ex-Logged Workouts"];
-  includeCustomWorkout ? items.push(CUSTOM_WORKOUT_MENU_ITEM) : {}; //if custom workout is included push the option
+    setIsOpen(true);
+  };
+
+  useEffect(() => {
+    //fetch initial exercise list with empty starts_with param
+    fetchExerciseList("")
+      .then((v) => {
+        setItems(v);
+      })
+      .catch((e) => console.error(e));
+  }, []);
 
   let count = 0;
   return (
     <div className="h-full w-full relative inline-block">
       <div
+        onBlur={(e) => {
+          e.target.innerText = e.target.innerText.trim() || PLACEHOLDER_TEXT;
+          setSelected(e.target.innerText);
+          setIsOpen(false);
+        }}
+        onInput={onInput}
         className={`h-full w-full bg-gray-ogg-2 shadow-black/30 shadow-sm rounded-2xl font-inter 
         font-light px-2 pb-1 text-2xl items-center justify-center flex`}
-        contentEditable={contentEditable}
+        contentEditable={true}
         suppressContentEditableWarning
-        onBlur={() => setContentEditable(false)}
-        ref={exerciseChooseDivRef}
-        onClick={(e) => {
-          e.preventDefault();
-          setIsOpen(!isOpen);
-        }}
       >
-        {selected !== "" ? selected : PLACEHOLDER_TEXT}
+        {selected}
       </div>
 
       <div
