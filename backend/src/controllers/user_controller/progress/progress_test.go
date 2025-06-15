@@ -83,11 +83,12 @@ func TestHandleGenerateProgressShouldSucceed(t *testing.T) {
 		progress.HandleGetProgress(c)
 	})
 
-	req := httptest.NewRequest("GET", "/progress?exercise_name=bench%20press&start_time=2025-06-08%2000:00:00&end_time=2025-06-15%2000:00:00", nil)
+	req := httptest.NewRequest("GET", "/progress?exercise_name=bench%20press&start_time=2025-06-08%2000:00:00&end_time=2025-06-16%2000:00:00", nil)
 	req.Header.Set(auth_code.AUTH_CODE_FIELDNAME, "test_auth_code") // Set the auth code in the header
 	req.Header.Set(user.LoginIDKey, testUser.LoginID)
 	resp := httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
+
 	require.Equal(200, resp.Code, "Expected status code 200, got %d", resp.Code)
 	require.NotNil(resp.Body, "Response body should not be nil")
 	require.Greater(resp.Body.Len(), 0, "Response body should not be empty")
