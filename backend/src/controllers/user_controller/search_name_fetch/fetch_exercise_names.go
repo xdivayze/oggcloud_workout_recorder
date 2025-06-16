@@ -48,5 +48,5 @@ func HandleFetchExerciseNames(c *gin.Context) {
 		}
 		uniqueExerciseNames = append(uniqueExerciseNames, exercise.Name)
 	}
-	c.JSON(200, gin.H{"exercise_names": uniqueExerciseNames})
+	c.JSON(200, gin.H{"exerciseNames": uniqueExerciseNames})
 }

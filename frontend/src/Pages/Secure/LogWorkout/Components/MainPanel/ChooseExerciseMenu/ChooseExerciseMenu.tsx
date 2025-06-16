@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, type FormEvent } from "react";
+import { useContext,  useState, type FormEvent } from "react";
 import { fetchExerciseList } from "./Service";
 import {
   authContext,
