@@ -71,12 +71,12 @@ func HandleLogWorkout(c *gin.Context) {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				// If the set is not found, create a new one
 				newSet := &set_module.Set{
-					UserID:     user.ID,
-					SessionID:  retrievedSession.ID,
-					ExerciseID: retrievedExercise.ID,
+					UserID:       user.ID,
+					SessionID:    retrievedSession.ID,
+					ExerciseID:   retrievedExercise.ID,
 					ExerciseName: retrievedExercise.Name,
-					SetNumber:  uint(set.SetNo),
-					Reps:       []repetition.Repetition{}, // Initialize with an empty slice
+					SetNumber:    uint(set.SetNo),
+					Reps:         []repetition.Repetition{}, // Initialize with an empty slice
 				}
 
 				if err := newSet.Create(db.DB); err != nil {
@@ -99,10 +99,10 @@ func HandleLogWorkout(c *gin.Context) {
 		// If the set is found, update it with the new data
 		for i := 0; i < set.RepCount; i++ {
 			db.DB.Model(&foundSet).Association("Reps").Append(&repetition.Repetition{
-				Weight:           set.Weight,
+				Weight:           uint(set.Weight),
 				Unit:             set.Unit,
 				SetID:            foundSet.ID,
-				RepPositionInSet: i + lenRepsInSet, // Assuming this is the position of the repetition in the set 0 indexed
+				RepPositionInSet: uint(i + lenRepsInSet), // Assuming this is the position of the repetition in the set 0 indexed
 				ExerciseID:       retrievedExercise.ID,
 			})
 

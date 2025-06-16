@@ -55,7 +55,7 @@ func generateModelAppropriateRepSlice(set set.Set, exerciseID uint) []*intraset_
 			continue // Skip repetitions that are not for the specified exercise
 		}
 		reps = append(reps, intraset_heatmap.NewRep(float64(rep.Weight),
-			rep.RepPositionInSet))
+			int(rep.RepPositionInSet)))
 
 	}
 	return reps

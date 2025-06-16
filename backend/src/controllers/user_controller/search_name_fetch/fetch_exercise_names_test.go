@@ -99,11 +99,14 @@ func TestFetchExerciseOnlyExistsInGlobal(t *testing.T) {
 	// Check the response status code
 	require.Equal(200, resp.Code, "Expected status code 200, got %d", resp.Code)
 
-	var response map[string][]string
+	var response map[string]map[string]uint
 	require.Nil(json.Unmarshal(resp.Body.Bytes(), &response), "Failed to unmarshal response body")
 
 	require.NotNil(response["exerciseNames"], "Exercise names should not be nil")
 	require.Contains(response["exerciseNames"], "bench press", "Exercise names should contain 'bench press'")
+
+	// Check if the weight is 0, since the user has not lifted this exercise yet
+	require.Equal(uint(0), response["exerciseNames"]["bench press"], "Expected weight for 'bench press' to be 0, got %d", response["exerciseNames"]["bench press"])
 }
 
 func TestFetchExerciseNames(t *testing.T) {
@@ -181,9 +184,12 @@ func TestFetchExerciseNames(t *testing.T) {
 	// Check the response status code
 	require.Equal(200, resp.Code, "Expected status code 200, got %d", resp.Code)
 
-	var response map[string][]string
+	var response map[string]map[string]uint
 	require.Nil(json.Unmarshal(resp.Body.Bytes(), &response), "Failed to unmarshal response body")
 
 	require.NotNil(response["exerciseNames"], "Exercise names should not be nil")
 	require.Contains(response["exerciseNames"], "bench press", "Exercise names should contain 'bench press'")
+
+	// Check if the weight is 20, since the user has lifted this exercise
+	require.Equal(uint(20), response["exerciseNames"]["bench press"], "Expected weight for 'bench press' to be 20, got %d", response["exerciseNames"]["bench press"])
 }

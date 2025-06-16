@@ -4,6 +4,7 @@ import (
 	"backend/src/db"
 	"backend/src/models/user"
 	"backend/src/models/workout/exercise"
+	"backend/src/models/workout/repetition"
 	"backend/src/models/workout/set"
 	"errors"
 
@@ -30,9 +31,19 @@ func HandleFetchExerciseNames(c *gin.Context) { //TODO return greatest weight li
 	}
 
 	// Extract unique exercise names from the fetched sets
-	exerciseNames := make(map[uint]bool)
+	exerciseNames := make(map[string]uint)
 	for _, set := range fetchedSets {
-		exerciseNames[set.ExerciseID] = true
+		setReps, err := repetition.GetAllBySetIDAndWeightDesc(db.DB, set.ID)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				exerciseNames[set.ExerciseName] = 0 // If no repetitions found, set weight to 0
+				continue // Skip if no repetitions found for this set
+			}
+			c.JSON(500, gin.H{"error": "failed to retrieve repetitions"})
+			return
+		}
+		exerciseNames[set.ExerciseName] = setReps[0].Weight // Store the greatest weight lifted for this exercise
+		
 	}
 
 	// If no sets were found, search for exercises directly
@@ -47,21 +58,9 @@ func HandleFetchExerciseNames(c *gin.Context) { //TODO return greatest weight li
 			return
 		}
 		for _, ex := range exercises {
-			exerciseNames[ex.ID] = true
+			exerciseNames[ex.Name] = 0 //Set weight to 0 for exercises that user has not lifted yet
 		}
 	}
 
-	var uniqueExerciseNames []string
-	for exerciseID := range exerciseNames {
-		exercise, err := exercise.GetByID(db.DB, exerciseID)
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				continue // Skip if the exercise is not found
-			}
-			c.JSON(500, gin.H{"error": "failed to retrieve exercise"})
-			return
-		}
-		uniqueExerciseNames = append(uniqueExerciseNames, exercise.Name)
-	}
-	c.JSON(200, gin.H{"exerciseNames": uniqueExerciseNames})
+	c.JSON(200, gin.H{"exerciseNames": exerciseNames})
 }
