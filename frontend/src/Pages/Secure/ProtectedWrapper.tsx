@@ -15,7 +15,7 @@ export default function ProtectedWrapper() {
   } catch (e) {
     setTimeout(() => {
       navigate("/");
-    }, 3000);
+    }, 2700);
     // Redirect to login page if auth code is expired or not set
     // Using setTimeout to ensure the redirect happens after the current render cycle
     // And make sure user sees the 401 message

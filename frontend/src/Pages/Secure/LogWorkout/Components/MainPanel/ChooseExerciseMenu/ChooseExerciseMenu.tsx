@@ -22,9 +22,10 @@ export default function ChooseExerciseMenu({
 
   const onSelect = (item: string) => {
     setSelected(item);
+    setIsOpen(false);
     if (itemSelectEffectCallback) {
       //if a callback is provided, call it with the selected item
-      itemSelectEffectCallback(selected);
+      itemSelectEffectCallback(item);
     }
   };
 
@@ -58,8 +59,8 @@ export default function ChooseExerciseMenu({
         onBlur={(e) => {
           setTimeout(() => {
             e.target.innerText = e.target.innerText.trim() || PLACEHOLDER_TEXT;
-          setSelected(e.target.innerText);
-          setIsOpen(false);
+            onSelect(e.target.innerText);
+            
           },100)
           
         }}
@@ -91,7 +92,7 @@ export default function ChooseExerciseMenu({
                   }`}
                   key={item}
                   onClick={() => {
-                    setIsOpen(false);
+                    
                     onSelect(item);
                   }}
                 >
