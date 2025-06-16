@@ -1,4 +1,4 @@
-import { useContext, useRef, useState, type RefObject } from "react";
+import { useContext,  useState } from "react";
 import ChooseExerciseMenu from "../../LogWorkout/Components/MainPanel/ChooseExerciseMenu/ChooseExerciseMenu";
 
 import DatePanel from "./DatePanel";

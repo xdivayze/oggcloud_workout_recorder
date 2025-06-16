@@ -1,5 +1,9 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useContext, useEffect, useState, type FormEvent } from "react";
 import { fetchExerciseList } from "./Service";
+import {
+  authContext,
+  type SecurityContextType,
+} from "../../../../SecurityContext";
 
 const PLACEHOLDER_TEXT = "Choose Exercise";
 
@@ -12,6 +16,10 @@ export default function ChooseExerciseMenu({
   const [isOpen, setIsOpen] = useState(false);
   const [items, setItems] = useState<string[]>([]);
 
+  const [isItemsBeingFetched, setIsItemsBeingFetched] = useState(false);
+
+  const authContextFetched = useContext(authContext) as SecurityContextType;
+
   const onSelect = (item: string) => {
     setSelected(item);
     if (itemSelectEffectCallback) {
@@ -21,39 +29,39 @@ export default function ChooseExerciseMenu({
   };
 
   const onInput = (e: FormEvent<HTMLDivElement>) => {
-    
-    setItems([]);
-    const target = e.target as HTMLDivElement;
-    const text = target.innerText;
-    fetchExerciseList(text)
-      .then((v) => {
-        setItems(v);
-      })
-      .catch((e) => console.error(e))
-      .finally(() => {
-        setItems((prev) => [text, ...prev]);
-      });
+    if (!isItemsBeingFetched) {
+      setItems([]);
+      const target = e.target as HTMLDivElement;
+      const text = target.innerText;
+      fetchExerciseList(
+        text,
+        authContextFetched?.authCode,
+        authContextFetched?.loginID
+      )
+        .then((v) => {
+          setItems(v);
+        })
+        .catch((e) => console.error(e))
+        .finally(() => {
+          setItems((prev) => [text, ...prev]);
+          setIsItemsBeingFetched(false);
+        });
 
-    setIsOpen(true);
+      setIsOpen(true);
+    }
   };
-
-  useEffect(() => {
-    //fetch initial exercise list with empty starts_with param
-    fetchExerciseList("")
-      .then((v) => {
-        setItems(v);
-      })
-      .catch((e) => console.error(e));
-  }, []);
 
   let count = 0;
   return (
     <div className="h-full w-full relative inline-block">
       <div
         onBlur={(e) => {
-          e.target.innerText = e.target.innerText.trim() || PLACEHOLDER_TEXT;
+          setTimeout(() => {
+            e.target.innerText = e.target.innerText.trim() || PLACEHOLDER_TEXT;
           setSelected(e.target.innerText);
           setIsOpen(false);
+          },100)
+          
         }}
         onInput={onInput}
         className={`h-full w-full bg-gray-ogg-2 shadow-black/30 shadow-sm rounded-2xl font-inter 
@@ -73,23 +81,24 @@ export default function ChooseExerciseMenu({
         shadow-lg font-inter font-light bg-gray-ogg-2 border border-gray-300  `}
       >
         <div className=" w-full flex flex-col ">
-          {items.map((item) => {
-            count += 1;
-            return (
-              <div
-                className={`${
-                  count % 2 == 0 ? "bg-gray-ogg-1" : "bg-gray-ogg-2"
-                }`}
-                key={item}
-                onClick={() => {
-                  setIsOpen(false);
-                  onSelect(item);
-                }}
-              >
-                <span className="p-1">{item}</span>
-              </div>
-            );
-          })}
+          {!isItemsBeingFetched &&
+            items.map((item) => {
+              count += 1;
+              return (
+                <div
+                  className={`${
+                    count % 2 == 0 ? "bg-gray-ogg-1" : "bg-gray-ogg-2"
+                  }`}
+                  key={item}
+                  onClick={() => {
+                    setIsOpen(false);
+                    onSelect(item);
+                  }}
+                >
+                  <span className="p-1">{item}</span>
+                </div>
+              );
+            })}
         </div>
       </div>
     </div>
