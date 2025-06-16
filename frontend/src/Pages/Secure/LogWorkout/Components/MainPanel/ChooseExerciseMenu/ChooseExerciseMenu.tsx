@@ -1,79 +1,76 @@
-import { useContext, useEffect, useState, type RefObject } from "react";
-import { MainPanelRefContext } from "../../MainPanelWrapper";
+import { useContext,  useState, type FormEvent } from "react";
+import { fetchExerciseList } from "./Service";
+import {
+  authContext,
+  type SecurityContextType,
+} from "../../../../SecurityContext";
 
-const CUSTOM_WORKOUT_MENU_ITEM = "Enter Custom Workout";
-const CUSTOM_WORKOUT_MENU_ITEM_ONCLICK = "Enter Workout Name";
 const PLACEHOLDER_TEXT = "Choose Exercise";
 
-//TODO show best results from fetched exercises as it is being searched
-//TODO this can use some optimization
-
 export default function ChooseExerciseMenu({
-  includeCustomWorkout = true,
-  externalExerciseChooseDivRef,
   itemSelectEffectCallback,
 }: {
-  includeCustomWorkout?: boolean;
-  externalExerciseChooseDivRef?: RefObject<HTMLDivElement>;
-  itemSelectEffectCallback?: (item: string) => void;
+  itemSelectEffectCallback?: (item: string) => void; //caller function should set own state through callback
 }) {
-  let exerciseChooseDivRef = externalExerciseChooseDivRef
-    ? externalExerciseChooseDivRef
-    : useContext(MainPanelRefContext)?.exerciseChooseDivRef;
-
-  const [selected, setSelected] = useState("");
-  const [contentEditable, setContentEditable] = useState(false);
+  const [selected, setSelected] = useState(PLACEHOLDER_TEXT);
   const [isOpen, setIsOpen] = useState(false);
+  const [items, setItems] = useState<string[]>([]);
+
+  const [isItemsBeingFetched, setIsItemsBeingFetched] = useState(false);
+
+  const authContextFetched = useContext(authContext) as SecurityContextType;
 
   const onSelect = (item: string) => {
-    let selectedItem = "";
-    if (item.trim() === CUSTOM_WORKOUT_MENU_ITEM) {
-      //set the placeholder text custom workout onclick item
-      selectedItem = CUSTOM_WORKOUT_MENU_ITEM_ONCLICK;
-      setContentEditable(true);
-    } else {
-      selectedItem = item; // if not custom fallback to default item
-    }
-    
-    setSelected(selectedItem);
+    setSelected(item);
+    setIsOpen(false);
     if (itemSelectEffectCallback) {
       //if a callback is provided, call it with the selected item
-      itemSelectEffectCallback(selected);
+      itemSelectEffectCallback(item);
     }
   };
 
-  useEffect(() => {
-    if (exerciseChooseDivRef?.current) {
-      exerciseChooseDivRef.current.focus();
-      if (
-        !contentEditable && //if custom workout is selected but a custom workout isn't entered and div is blurred, fall back to default placeholder
-        exerciseChooseDivRef.current.innerText.trim() ===
-          CUSTOM_WORKOUT_MENU_ITEM_ONCLICK
-      ) {
-        setSelected(PLACEHOLDER_TEXT);
-      }
-    }
-  }, [contentEditable]);
+  const onInput = (e: FormEvent<HTMLDivElement>) => {
+    if (!isItemsBeingFetched) {
+      setItems([]);
+      const target = e.target as HTMLDivElement;
+      const text = target.innerText;
+      fetchExerciseList(
+        text,
+        authContextFetched?.authCode,
+        authContextFetched?.loginID
+      )
+        .then((v) => {
+          setItems(v);
+        })
+        .catch((e) => console.error(e))
+        .finally(() => {
+          setItems((prev) => [text, ...prev]);
+          setIsItemsBeingFetched(false);
+        });
 
-  const items = ["Fetched Ex-Logged Workouts"];
-  includeCustomWorkout ? items.push(CUSTOM_WORKOUT_MENU_ITEM) : {}; //if custom workout is included push the option
+      setIsOpen(true);
+    }
+  };
 
   let count = 0;
   return (
     <div className="h-full w-full relative inline-block">
       <div
+        onBlur={(e) => {
+          setTimeout(() => {
+            e.target.innerText = e.target.innerText.trim() || PLACEHOLDER_TEXT;
+            onSelect(e.target.innerText);
+            
+          },100)
+          
+        }}
+        onInput={onInput}
         className={`h-full w-full bg-gray-ogg-2 shadow-black/30 shadow-sm rounded-2xl font-inter 
         font-light px-2 pb-1 text-2xl items-center justify-center flex`}
-        contentEditable={contentEditable}
+        contentEditable={true}
         suppressContentEditableWarning
-        onBlur={() => setContentEditable(false)}
-        ref={exerciseChooseDivRef}
-        onClick={(e) => {
-          e.preventDefault();
-          setIsOpen(!isOpen);
-        }}
       >
-        {selected !== "" ? selected : PLACEHOLDER_TEXT}
+        {selected}
       </div>
 
       <div
@@ -85,23 +82,24 @@ export default function ChooseExerciseMenu({
         shadow-lg font-inter font-light bg-gray-ogg-2 border border-gray-300  `}
       >
         <div className=" w-full flex flex-col ">
-          {items.map((item) => {
-            count += 1;
-            return (
-              <div
-                className={`${
-                  count % 2 == 0 ? "bg-gray-ogg-1" : "bg-gray-ogg-2"
-                }`}
-                key={item}
-                onClick={() => {
-                  setIsOpen(false);
-                  onSelect(item);
-                }}
-              >
-                <span className="p-1">{item}</span>
-              </div>
-            );
-          })}
+          {!isItemsBeingFetched &&
+            items.map((item) => {
+              count += 1;
+              return (
+                <div
+                  className={`${
+                    count % 2 == 0 ? "bg-gray-ogg-1" : "bg-gray-ogg-2"
+                  }`}
+                  key={item}
+                  onClick={() => {
+                    
+                    onSelect(item);
+                  }}
+                >
+                  <span className="p-1">{item}</span>
+                </div>
+              );
+            })}
         </div>
       </div>
     </div>

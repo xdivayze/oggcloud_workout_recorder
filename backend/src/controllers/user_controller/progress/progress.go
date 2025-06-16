@@ -79,7 +79,7 @@ func HandleGetProgress(c *gin.Context) {
 	colorSetterFunc := func(intensity float64) color_module.Color {
 		return color_module.RGBA{
 			R: 0,
-			G: uint8(intensity),
+			G: (255 - uint8(intensity)),
 			B: 0,
 			A: 255,
 		}

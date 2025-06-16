@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import MiniPanel from "../../LogWorkout/Components/MainPanel/MiniPanel";
 
- //TODO fetch dates from server up to nWeeksBack weeks ago
-export default function DatePanel({ 
+//TODO fetch dates from server up to nWeeksBack weeks ago
+export default function DatePanel({
   nWeeksBack,
   text,
   onChange,
@@ -11,7 +11,9 @@ export default function DatePanel({
   text: string;
   onChange: (date: Date) => void;
 }) {
-  const dateRef = useRef<HTMLDivElement | null>(null) as React.RefObject<HTMLDivElement>;
+  const dateRef = useRef<HTMLDivElement | null>(
+    null
+  ) as React.RefObject<HTMLDivElement>;
   return (
     <MiniPanel
       placeholderText={text}
@@ -33,12 +35,15 @@ export default function DatePanel({
   );
 }
 
-export function GenerateDateArray(nWeeks: number): string[] {
+export function GenerateDateArray(
+  nIntervals: number,
+  interval: number = 7
+): string[] {
   const dateArray: string[] = [];
   const today = new Date();
-  for (let i = 0; i < nWeeks; i++) {
+  for (let i = 0; i < nIntervals; i++) {
     const date = new Date(today);
-    date.setDate(today.getDate() - i * 7);
+    date.setDate(today.getDate() - i * interval); // Subtract i intervals
     dateArray.push(date.toISOString().split("T")[0]);
   }
   return dateArray;

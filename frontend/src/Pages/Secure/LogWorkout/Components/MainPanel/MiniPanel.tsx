@@ -48,7 +48,7 @@ export default function MiniPanel({
         } transition-all delay-25 ease-in-out w-full absolute  rounded-xl 
         shadow-lg font-inter font-light bg-gray-ogg-2 border border-gray-300  `}
       >
-        <div className=" w-full flex flex-col ">
+        <div className=" w-full flex flex-col overflow-auto max-h-60 ">
           {dropdownFeatures?.items.map((item) => {
             count += 1;
             return (

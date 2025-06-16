@@ -20,3 +20,11 @@ func GetByName(db *gorm.DB, name string) (*Exercise, error) {
 	}
 	return &exercise, nil
 }
+
+func GetByID(db *gorm.DB, id uint) (*Exercise, error) {
+	var exercise Exercise
+	if err := db.First(&exercise, "id = ?", id).Error; err != nil {
+		return nil, err
+	}
+	return &exercise, nil
+}

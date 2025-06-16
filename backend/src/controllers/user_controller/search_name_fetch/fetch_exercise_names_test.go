@@ -1,7 +1,7 @@
-package progress_test
+package search_name_fetch_test
 
 import (
-	"backend/src/controllers/user_controller/progress"
+	"backend/src/controllers/user_controller/search_name_fetch"
 	"backend/src/db"
 	"backend/src/middleware"
 	"backend/src/models/auth_code"
@@ -10,8 +10,9 @@ import (
 	"backend/src/models/workout/repetition"
 	"backend/src/models/workout/session"
 	"backend/src/models/workout/set"
+	"encoding/json"
+	"log"
 	"net/http/httptest"
-	"os"
 	"testing"
 	"time"
 
@@ -19,9 +20,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-//unit tests for the progress package
-
-func TestHandleGenerateProgressShouldSucceed(t *testing.T) {
+func TestFetchExerciseNames(t *testing.T) {
 	// This test will check if the progress plot is generated successfully
 	// with valid parameters and returns a non-nil bytes.Buffer.
 	require := require.New(t)
@@ -79,27 +78,26 @@ func TestHandleGenerateProgressShouldSucceed(t *testing.T) {
 	require.Nil(db.DB.Model(testSet).Association("Reps").Append(&testRep), "Failed to append repetitions to the set")
 
 	router := gin.Default()
-	router.Use(middleware.AuthMiddleware()) // Use the auth middleware
-
-	router.GET("/progress", func(c *gin.Context) {
-		progress.HandleGetProgress(c)
+	router.Use(middleware.AuthMiddleware())
+	router.GET("/fetch_exercise_names", func(c *gin.Context) {
+		search_name_fetch.HandleFetchExerciseNames(c)
 	})
 
-	req := httptest.NewRequest("GET", "/progress?exercise_name=bench%20press&start_time=2025-06-08%2000:00:00&end_time=2025-06-16%2000:00:00", nil)
+	// Create a request to fetch exercise names
+	url := "/fetch_exercise_names?starts_with=be"
+	req := httptest.NewRequest("GET", url, nil)
 	req.Header.Set(auth_code.AUTH_CODE_FIELDNAME, "test_auth_code") // Set the auth code in the header
 	req.Header.Set(user.LoginIDKey, testUser.LoginID)
+
 	resp := httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
+	// Check the response status code
 	require.Equal(200, resp.Code, "Expected status code 200, got %d", resp.Code)
-	require.NotNil(resp.Body, "Response body should not be nil")
-	require.Greater(resp.Body.Len(), 0, "Response body should not be empty")
-	require.Equal("image/png", resp.Header().Get("Content-Type"), "Expected Content-Type to be image/png, got %s", resp.Header().Get("Content-Type"))
-	require.NotEmpty(resp.Body.Bytes(), "Response body should not be empty")
 
-	//save the response body to a file for manual inspection if needed
-
-	require.Nil(os.WriteFile("progress_plot.png", resp.Body.Bytes(), 0644), "Failed to write response body to file")
-	require.FileExists("progress_plot.png", "Progress plot file should exist")
-
+	var response map[string][]string
+	require.Nil(json.Unmarshal(resp.Body.Bytes(), &response), "Failed to unmarshal response body")
+	log.Println("Response Body:", response)
+	require.NotNil(response["exerciseNames"], "Exercise names should not be nil")
+	require.Contains(response["exerciseNames"], "bench press", "Exercise names should contain 'bench press'")
 }

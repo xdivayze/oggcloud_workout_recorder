@@ -36,6 +36,14 @@ func handleGenerateProgressPlot(yPadding vg.Length, startTime time.Time, endTime
 		return &buf, errors.New("no data available for the specified exercise")
 	}
 
+	minDate, maxDate := data.GetDateRange()
+	if minDate.IsZero() || maxDate.IsZero() {
+		return &buf, errors.New("no valid date range found in the data")
+	}
+
+	divisor := data.GetMaxSetSize() * (int(maxDate.Sub(minDate).Hours() / 24) + 1)
+
+
 	heatmap := intraset_heatmap.NewIntrasetHeatmap(
 		data,
 		maxIntensity,
@@ -43,6 +51,7 @@ func handleGenerateProgressPlot(yPadding vg.Length, startTime time.Time, endTime
 		columnWidth,
 		minHeight,
 		maxHeight,
+		divisor,
 		colorSetterFunction,
 	)
 
@@ -64,7 +73,7 @@ func handleGenerateProgressPlot(yPadding vg.Length, startTime time.Time, endTime
 	p.Y.Min = 0
 	p.Y.Max = float64(heatmap.MaxReps + 3)
 
-	img := vgimg.New(500, 500)
+	img := vgimg.New(500, maxHeight + 50)
 	dc := draw.New(img)
 	p.Draw(dc)
 
