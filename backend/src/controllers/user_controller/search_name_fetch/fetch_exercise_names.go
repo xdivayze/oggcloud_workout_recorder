@@ -21,7 +21,7 @@ func HandleFetchExerciseNames(c *gin.Context) {
 	user := c.MustGet("user").(*user.User)  // Get the user from the context, assuming middleware sets it
 	fetchedSets, err := set.GetByCreatedAtDescAndUserID(db.DB, user.ID, startsWith)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, gorm.ErrRecordNotFound) { //TODO check global exercise list if no exercises are found
 			// If no sets are found, return an empty list
 			c.JSON(404, gin.H{"exercise_names": []string{}})
 			return
@@ -48,5 +48,5 @@ func HandleFetchExerciseNames(c *gin.Context) {
 		}
 		uniqueExerciseNames = append(uniqueExerciseNames, exercise.Name)
 	}
-	c.JSON(200, gin.H{"exercise_names": uniqueExerciseNames})
+	c.JSON(200, gin.H{"exerciseNames": uniqueExerciseNames})
 }

@@ -1,7 +1,6 @@
 import { createContext, useRef, type ReactNode, type RefObject } from "react";
 
 export type MainPanelRefContextType = {
-  exerciseChooseDivRef: RefObject<HTMLDivElement>;
   setNumberDivRef: RefObject<HTMLDivElement>;
   repWeightRef: RefObject<HTMLDivElement>;
   weightUnitRef: RefObject<HTMLDivElement>;
@@ -15,9 +14,6 @@ export default function MainPanelWrapper({
 }: {
   children: ReactNode;
 }) {
-  const exerciseChooseDivRef = useRef<HTMLDivElement>(
-    null
-  ) as RefObject<HTMLDivElement>;
   const setNumberDivRef = useRef<HTMLDivElement>(
     null
   ) as RefObject<HTMLDivElement>;
@@ -33,7 +29,6 @@ export default function MainPanelWrapper({
   const repCountRef = useRef<HTMLDivElement>(null) as RefObject<HTMLDivElement>;
 
   const refStorage: MainPanelRefContextType = {
-    exerciseChooseDivRef,
     setNumberDivRef,
     repWeightRef,
     weightUnitRef,

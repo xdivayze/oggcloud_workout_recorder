@@ -1,4 +1,4 @@
-import { useContext, useRef, useState, type RefObject } from "react";
+import { useContext,  useState } from "react";
 import ChooseExerciseMenu from "../../LogWorkout/Components/MainPanel/ChooseExerciseMenu/ChooseExerciseMenu";
 
 import DatePanel from "./DatePanel";
@@ -7,18 +7,15 @@ import { authContext } from "../../SecurityContext";
 import MiniPanel from "../../LogWorkout/Components/MainPanel/MiniPanel";
 
 export default function MainPanel() {
-  const exerciseChooseDivRef = useRef<HTMLDivElement | null>(
-    null
-  ) as RefObject<HTMLDivElement>;
+
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [fetching, setFetching] = useState<boolean>(false);
   const [imageSrcs, setImageSrcs] = useState<Array<string> | null>(null);
-  const [_, setSelectedExercise] = useState<string | null>("");
+  const [selectedExercise, setSelectedExercise] = useState<string | null>("");
   const authContextFetched = useContext(authContext);
 
   const onFetchClick = () => {
-    const selectedExercise = exerciseChooseDivRef.current?.innerText;
     if (startDate && endDate && selectedExercise && !fetching) {
       FetchWorkoutPlots(
         startDate,
@@ -43,7 +40,6 @@ export default function MainPanel() {
             setSelectedExercise(item);
             setImageSrcs(null); // Reset images when a new exercise is selected
           }}
-          externalExerciseChooseDivRef={exerciseChooseDivRef}
         />
       </div>
       <div className="min-h-14 w-full mb-4  flex flex-row justify-between items-center">

@@ -98,6 +98,6 @@ func TestFetchExerciseNames(t *testing.T) {
 	var response map[string][]string
 	require.Nil(json.Unmarshal(resp.Body.Bytes(), &response), "Failed to unmarshal response body")
 	log.Println("Response Body:", response)
-	require.NotNil(response["exercise_names"], "Exercise names should not be nil")
-	require.Contains(response["exercise_names"], "bench press", "Exercise names should contain 'bench press'")
+	require.NotNil(response["exerciseNames"], "Exercise names should not be nil")
+	require.Contains(response["exerciseNames"], "bench press", "Exercise names should contain 'bench press'")
 }
