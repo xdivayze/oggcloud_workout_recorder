@@ -46,7 +46,10 @@ func ConnectDB() error {
 	log.Println("DB connection established")
 
 	//db configs
-	DB.Migrator().DropTable(TABLES...)
+	if os.Getenv("DEV") == "true" {
+		DB.Migrator().DropTable(TABLES...)
+		log.Println("Dropping tables in development mode")
+	}
 	DB.AutoMigrate(TABLES...)
 	//--
 	return nil
