@@ -114,7 +114,7 @@ export default function ChooseExerciseMenu({
       >
         <div className=" w-full flex flex-col ">
           {!isItemsBeingFetched &&
-            Array.from(items.keys()).map((item) => {
+            Array.from(items.keys()).reverse().map((item) => {
               count += 1;
               return (
                 <div
