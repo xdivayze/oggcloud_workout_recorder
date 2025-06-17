@@ -2,9 +2,7 @@ import {
   useContext,
   useEffect,
   useState,
-  type Dispatch,
   type FormEvent,
-  type SetStateAction,
 } from "react";
 import { fetchExerciseList } from "./Service";
 import {
