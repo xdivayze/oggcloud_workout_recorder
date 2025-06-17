@@ -1,56 +1,72 @@
-import { useContext,  useState, type FormEvent } from "react";
+import {
+  useContext,
+  useEffect,
+  useState,
+  type Dispatch,
+  type FormEvent,
+  type SetStateAction,
+} from "react";
 import { fetchExerciseList } from "./Service";
 import {
   authContext,
   type SecurityContextType,
 } from "../../../../SecurityContext";
+import { useDebouncedValue } from "./useDebouncedValue";
 
 const PLACEHOLDER_TEXT = "Choose Exercise";
 
 export default function ChooseExerciseMenu({
   itemSelectEffectCallback,
 }: {
-  itemSelectEffectCallback?: (item: string) => void; //caller function should set own state through callback
+  itemSelectEffectCallback?: (item: string, weight:number) => void; //caller function should set own state through callback
 }) {
   const [selected, setSelected] = useState(PLACEHOLDER_TEXT);
   const [isOpen, setIsOpen] = useState(false);
-  const [items, setItems] = useState<string[]>([]);
+  const [items, setItems] = useState<Map<string, number>>(
+    new Map<string, number>()
+  );
 
   const [isItemsBeingFetched, setIsItemsBeingFetched] = useState(false);
+
+  const [inputText, setInputText] = useState("");
+  const debouncedInputText = useDebouncedValue(inputText, 300);
 
   const authContextFetched = useContext(authContext) as SecurityContextType;
 
   const onSelect = (item: string) => {
     setSelected(item);
     setIsOpen(false);
+    const weight = items.get(item) || 0; // get the weight or default to 0 if not found 
     if (itemSelectEffectCallback) {
       //if a callback is provided, call it with the selected item
-      itemSelectEffectCallback(item);
+      itemSelectEffectCallback(item, weight);
     }
   };
 
   const onInput = (e: FormEvent<HTMLDivElement>) => {
-    if (!isItemsBeingFetched) {
-      setItems([]);
-      const target = e.target as HTMLDivElement;
-      const text = target.innerText;
-      fetchExerciseList(
-        text,
-        authContextFetched?.authCode,
-        authContextFetched?.loginID
-      )
-        .then((v) => {
-          setItems(v);
-        })
-        .catch((e) => console.error(e))
-        .finally(() => {
-          setItems((prev) => [text, ...prev]);
-          setIsItemsBeingFetched(false);
-        });
-
-      setIsOpen(true);
-    }
+    const target = e.target as HTMLDivElement;
+    setInputText(target.innerText.trim());
   };
+
+  useEffect(() => {
+    if (!debouncedInputText.trim() || isItemsBeingFetched) return;
+    setIsItemsBeingFetched(true);
+    setItems(new Map<string, number>());
+    fetchExerciseList(
+      debouncedInputText,
+      authContextFetched?.authCode,
+      authContextFetched?.loginID
+    )
+      .then((v) => {
+        setItems(v);
+      })
+      .catch((e) => console.error(e))
+      .finally(() => {
+        setIsItemsBeingFetched(false);
+        setItems((prev) => prev.set(debouncedInputText, 0)); // add the input text as an item with a dummy value
+        setIsOpen(true);
+      });
+  }, [debouncedInputText]);
 
   let count = 0;
   return (
@@ -60,9 +76,7 @@ export default function ChooseExerciseMenu({
           setTimeout(() => {
             e.target.innerText = e.target.innerText.trim() || PLACEHOLDER_TEXT;
             onSelect(e.target.innerText);
-            
-          },100)
-          
+          }, 100);
         }}
         onInput={onInput}
         className={`h-full w-full bg-gray-ogg-2 shadow-black/30 shadow-sm rounded-2xl font-inter 
@@ -83,7 +97,7 @@ export default function ChooseExerciseMenu({
       >
         <div className=" w-full flex flex-col ">
           {!isItemsBeingFetched &&
-            items.map((item) => {
+            Array.from(items.keys()).map((item) => {
               count += 1;
               return (
                 <div
@@ -92,7 +106,6 @@ export default function ChooseExerciseMenu({
                   }`}
                   key={item}
                   onClick={() => {
-                    
                     onSelect(item);
                   }}
                 >
