@@ -1,4 +1,4 @@
-import { useContext,  useState } from "react";
+import { useContext,  useRef,  useState } from "react";
 import ChooseExerciseMenu from "../../LogWorkout/Components/MainPanel/ChooseExerciseMenu/ChooseExerciseMenu";
 
 import DatePanel from "./DatePanel";
@@ -12,15 +12,17 @@ export default function MainPanel() {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [fetching, setFetching] = useState<boolean>(false);
   const [imageSrcs, setImageSrcs] = useState<Array<string> | null>(null);
-  const [selectedExercise, setSelectedExercise] = useState<string | null>("");
+
   const authContextFetched = useContext(authContext);
 
+  const chosenExerciseRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>;
+
   const onFetchClick = () => {
-    if (startDate && endDate && selectedExercise && !fetching) {
+    if (startDate && endDate && chosenExerciseRef.current && !fetching) {
       FetchWorkoutPlots(
         startDate,
         endDate,
-        selectedExercise,
+        chosenExerciseRef.current.innerText || "",
         setFetching,
         setImageSrcs,
         authContextFetched?.authCode as string,
@@ -36,8 +38,8 @@ export default function MainPanel() {
     >
       <div className=" min-h-14 w-full mb-4 cursor-pointer ">
         <ChooseExerciseMenu
-          itemSelectEffectCallback={(item: string) => {
-            setSelectedExercise(item);
+          ref={chosenExerciseRef}
+          itemSelectEffectCallback={() => {
             setImageSrcs(null); // Reset images when a new exercise is selected
           }}
         />
