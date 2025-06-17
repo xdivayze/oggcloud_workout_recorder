@@ -1,7 +1,6 @@
 package set
 
 import (
-
 	"gorm.io/gorm"
 )
 
@@ -23,10 +22,10 @@ func GetBySessionIDAndExerciseNameAndSetNumber(db *gorm.DB, sessionID uint, exer
 	return &set, nil
 }
 
-func GetByCreatedAtDescAndUserID(db *gorm.DB, userID uint, startsWith string) ([]Set, error) {
+func GetByCreatedAtDescAndUserIDAndStartsWith(db *gorm.DB, userID uint, startsWith string) ([]Set, error) {
 	var sets []Set
-	if err := db.Where("user_id = ? AND exercise_name LIKE ?", userID,  startsWith+"%"). // Use ILIKE for case-insensitive search
-	Order("created_at DESC").Find(&sets).Error; err != nil {
+	if err := db.Where("user_id = ? AND LOWER(exercise_name) LIKE ?", userID, startsWith+"%"). // Use ILIKE for case-insensitive search
+													Order("created_at DESC").Find(&sets).Error; err != nil {
 		return nil, err
 	}
 	if len(sets) == 0 {

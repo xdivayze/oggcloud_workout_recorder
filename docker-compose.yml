@@ -3,8 +3,8 @@ services:
     build:
       context: ./frontend
     ports:
-      - "8153:80"
-      - "8443:443"
+      - ${FRONTEND_HTTP_PORT_REDIRECTION}
+      - ${FRONTEND_HTTPS_PORT_REDIRECTION}
     volumes:
       - ./frontend/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./certs/fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
@@ -32,7 +32,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      - "8432:5432"
+      - ${POSTGRES_DB_HOST_PORT}
 
 volumes:
   pgdata:

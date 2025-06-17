@@ -10,7 +10,9 @@ import (
 	"backend/src/models/workout/repetition"
 	"backend/src/models/workout/session"
 	"backend/src/models/workout/set"
+
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"testing"
 	"time"
@@ -68,12 +70,12 @@ func TestHandleGenerateProgressShouldSucceed(t *testing.T) {
 	}
 
 	testSet := &set.Set{
-		ID:         uint(setID),
-		ExerciseID: testExercise.ID,
+		ID:           uint(setID),
+		ExerciseID:   testExercise.ID,
 		ExerciseName: testExercise.Name,
-		UserID:     testUser.ID,
-		SessionID:  testSession.ID,
-		SetNumber:  1,
+		UserID:       testUser.ID,
+		SessionID:    testSession.ID,
+		SetNumber:    1,
 	}
 	require.Nil(db.DB.Model(testSession).Association("Sets").Append(testSet))
 	require.Nil(db.DB.Model(testSet).Association("Reps").Append(&testRep), "Failed to append repetitions to the set")
@@ -85,7 +87,7 @@ func TestHandleGenerateProgressShouldSucceed(t *testing.T) {
 		progress.HandleGetProgress(c)
 	})
 
-	req := httptest.NewRequest("GET", "/progress?exercise_name=bench%20press&start_time=2025-06-08%2000:00:00&end_time=2025-06-16%2000:00:00", nil)
+	req := httptest.NewRequest("GET", "/progress?exercise_name=bench%20press&start_time=2025-06-08%2000:00:00&end_time="+url.QueryEscape(now.Add(time.Hour * 24).Format("2006-01-02 15:04:05")), nil)
 	req.Header.Set(auth_code.AUTH_CODE_FIELDNAME, "test_auth_code") // Set the auth code in the header
 	req.Header.Set(user.LoginIDKey, testUser.LoginID)
 	resp := httptest.NewRecorder()

@@ -4,6 +4,7 @@ import (
 	"backend/src/db"
 	"backend/src/models/user"
 	"backend/src/models/workout/exercise"
+	"backend/src/models/workout/repetition"
 	"backend/src/models/workout/set"
 	"errors"
 
@@ -11,42 +12,55 @@ import (
 	"gorm.io/gorm"
 )
 
-func HandleFetchExerciseNames(c *gin.Context) {
+func HandleFetchExerciseNames(c *gin.Context) { //TODO return greatest weight lifted for the found exercise for the user
 	// This function handles the request to fetch recently
 	// saved sets' exercise names. for displaying in the frontend
-	// search bar.
+	// search bar. It also searches for exercises globally if no sets are found.
 
 	params := c.Request.URL.Query()
 	startsWith := params.Get("starts_with") // nullable
 	user := c.MustGet("user").(*user.User)  // Get the user from the context, assuming middleware sets it
-	fetchedSets, err := set.GetByCreatedAtDescAndUserID(db.DB, user.ID, startsWith)
+	fetchedSets, err := set.GetByCreatedAtDescAndUserIDAndStartsWith(db.DB, user.ID, startsWith)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) { //TODO check global exercise list if no exercises are found
-			// If no sets are found, return an empty list
-			c.JSON(404, gin.H{"exercise_names": []string{}})
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			fetchedSets = []set.Set{} // If no sets found, return an empty slice
+		} else {
+			c.JSON(500, gin.H{"error": "failed to retrieve sets"})
 			return
 		}
-		c.JSON(500, gin.H{"error": "failed to retrieve sets"})
-		return
 	}
 
 	// Extract unique exercise names from the fetched sets
-	exerciseNames := make(map[uint]bool)
+	exerciseNames := make(map[string]uint)
 	for _, set := range fetchedSets {
-		exerciseNames[set.ExerciseID] = true
-	}
-
-	var uniqueExerciseNames []string
-	for exerciseID := range exerciseNames {
-		exercise, err := exercise.GetByID(db.DB, exerciseID)
+		setReps, err := repetition.GetAllBySetIDAndWeightDesc(db.DB, set.ID)
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				continue // Skip if the exercise is not found
+				exerciseNames[set.ExerciseName] = 0 // If no repetitions found, set weight to 0
+				continue // Skip if no repetitions found for this set
 			}
-			c.JSON(500, gin.H{"error": "failed to retrieve exercise"})
+			c.JSON(500, gin.H{"error": "failed to retrieve repetitions"})
 			return
 		}
-		uniqueExerciseNames = append(uniqueExerciseNames, exercise.Name)
+		exerciseNames[set.ExerciseName] = setReps[0].Weight // Store the greatest weight lifted for this exercise
+		
 	}
-	c.JSON(200, gin.H{"exerciseNames": uniqueExerciseNames})
+
+	// If no sets were found, search for exercises directly
+	if len(exerciseNames) == 0 {
+		exercises, err := exercise.GetAllByStartsWith(db.DB, startsWith)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				c.JSON(404, gin.H{"exerciseNames": []string{}})
+				return // No exercises found, return empty list
+			}
+			c.JSON(500, gin.H{"error": "failed to retrieve exercises"})
+			return
+		}
+		for _, ex := range exercises {
+			exerciseNames[ex.Name] = 0 //Set weight to 0 for exercises that user has not lifted yet
+		}
+	}
+
+	c.JSON(200, gin.H{"exerciseNames": exerciseNames})
 }

@@ -18,4 +18,5 @@ type Set struct {
 	SetNumber  uint                    `json:"set_number" gorm:"not null"`                                                  // The number of this set in the session
 	CreatedAt  time.Time               `json:"created_at" gorm:"autoCreateTime"`                                            // Timestamp when the set was created
 	UserID     uint                    `json:"user_id" gorm:"not null"`                                                     // Foreign key to User
+
 }

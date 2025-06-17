@@ -5,11 +5,11 @@ export default function handleFetchExerciseNames(){
         const params = new URL(request.url).searchParams;
         const startsWith = params.get("starts_with") || "";
         console.log(startsWith)
-         const exerciseNames = [
-            "Bench Press",
-            "Squat",
-            "Deadlift",
-            ]
+         const exerciseNames = 
+            {"Bench Press": 50,
+            "Squat": 100,
+            "Deadlift": 25,}
+            
         return HttpResponse.json({exerciseNames: exerciseNames}, {status: 200})
     })
 }
