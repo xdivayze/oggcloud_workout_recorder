@@ -1,9 +1,4 @@
-import {
-  useContext,
-  useEffect,
-  useState,
-  type FormEvent,
-} from "react";
+import { useContext, useEffect, useState, type FormEvent } from "react";
 import { fetchExerciseList } from "./Service";
 import {
   authContext,
@@ -16,7 +11,7 @@ const PLACEHOLDER_TEXT = "Choose Exercise";
 export default function ChooseExerciseMenu({
   itemSelectEffectCallback,
 }: {
-  itemSelectEffectCallback?: (item: string, weight:number) => void; //caller function should set own state through callback
+  itemSelectEffectCallback?: (item: string, weight: number) => void; //caller function should set own state through callback
 }) {
   const [selected, setSelected] = useState(PLACEHOLDER_TEXT);
   const [isOpen, setIsOpen] = useState(false);
@@ -34,7 +29,7 @@ export default function ChooseExerciseMenu({
   const onSelect = (item: string) => {
     setSelected(item);
     setIsOpen(false);
-    const weight = items.get(item) || 0; // get the weight or default to 0 if not found 
+    const weight = items.get(item) || 0; // get the weight or default to 0 if not found
     if (itemSelectEffectCallback) {
       //if a callback is provided, call it with the selected item
       itemSelectEffectCallback(item, weight);
@@ -75,6 +70,28 @@ export default function ChooseExerciseMenu({
             e.target.innerText = e.target.innerText.trim() || PLACEHOLDER_TEXT;
             onSelect(e.target.innerText);
           }, 100);
+        }}
+        onClick={(e) => {
+          const target = e.target as HTMLDivElement;
+          if (target.innerText === PLACEHOLDER_TEXT) {
+            target.innerText = "";
+          }
+          if (!isItemsBeingFetched) {
+            fetchExerciseList(
+              "",
+              authContextFetched?.authCode,
+              authContextFetched?.loginID
+            )
+              .then((v) => {
+                setItems(v);
+              })
+              .catch((e) => console.error(e))
+              .finally(() => {
+                setIsItemsBeingFetched(false);
+                
+                setIsOpen(true);
+              });
+          }
         }}
         onInput={onInput}
         className={`h-full w-full bg-gray-ogg-2 shadow-black/30 shadow-sm rounded-2xl font-inter 
