@@ -32,11 +32,14 @@ func main() {
 	r := gin.Default()
 	routes.RegisterRoutes(r)
 
-	r.Static("/assets", "./frontend/assets")
-	r.StaticFile("/", "./frontend/index.html")
-	r.NoRoute(func(c *gin.Context) {
-		c.File("./frontend/index.html")
-	})
+	if os.Getenv("DEV") == "true" {
+
+		r.Static("/assets", "./frontend/assets")
+		r.StaticFile("/", "./frontend/index.html")
+		r.NoRoute(func(c *gin.Context) {
+			c.File("./frontend/index.html")
+		})
+	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGKILL, syscall.SIGTERM)
 	defer stop()
