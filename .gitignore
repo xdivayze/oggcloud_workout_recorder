@@ -1,0 +1,4 @@
+.env
+backend/.air.toml
+certs/fullchain.pem
+certs/privkey.pem
