@@ -24,11 +24,15 @@ export default function MainPanel() {
   const dates = GenerateDateArray(25, 1); // Generate an array of dates for the last 6 weeks
   dates[0] = "Today"; // Set the first date to "Today"
 
-  const [chosenExercise, setChosenExercise] = useState<string>("");
   const [repWeightPlaceholder, setRepWeightPlaceholder] = useState<number>(0);
 
-  const { setNumberDivRef, repWeightRef, weightUnitRef, repCountRef } =
-    useContext(MainPanelRefContext) as MainPanelRefContextType;
+  const {
+    setNumberDivRef,
+    repWeightRef,
+    weightUnitRef,
+    repCountRef,
+    chosenExerciseRef,
+  } = useContext(MainPanelRefContext) as MainPanelRefContextType;
   const [partialSums, setPartialSums] = useState<Map<string, WorkoutSetType>>(
     new Map()
   );
@@ -59,8 +63,8 @@ export default function MainPanel() {
       </div>
       <div className="min-h-14 w-full mb-4 cursor-pointer ">
         <ChooseExerciseMenu
-          itemSelectEffectCallback={(item, weight) => {
-            setChosenExercise(item.trim());
+          ref={chosenExerciseRef}
+          itemSelectEffectCallback={(_, weight) => {
             setRepWeightPlaceholder(weight);
           }}
         />
@@ -91,7 +95,7 @@ export default function MainPanel() {
               setNo: Number(setNumberDivRef.current.innerText.trim()),
               weight: Number(repWeightRef.current.innerText.trim()),
               unit: weightUnitRef.current.innerText.trim(),
-              exerciseName: chosenExercise,
+              exerciseName: chosenExerciseRef.current.innerText.trim(),
             });
             setPartialSums((prev) => {
               const newMap = new Map(prev);
@@ -111,7 +115,9 @@ export default function MainPanel() {
             color="bg-blue-ogg-0"
           />
         </div>
-        <div className={`min-h-11 w-1/6 ${repWeightPlaceholder === 0 && "italic"}`}>
+        <div
+          className={`min-h-11 w-1/6 ${repWeightPlaceholder === 0 && "italic"}`}
+        >
           <MiniPanel
             ref={repWeightRef}
             placeholderText={

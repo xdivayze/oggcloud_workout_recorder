@@ -10,8 +10,10 @@ const PLACEHOLDER_TEXT = "Choose Exercise";
 
 export default function ChooseExerciseMenu({
   itemSelectEffectCallback,
+  ref,
 }: {
   itemSelectEffectCallback?: (item: string, weight: number) => void; //caller function should set own state through callback
+  ref: React.RefObject<HTMLDivElement>;
 }) {
   const [selected, setSelected] = useState(PLACEHOLDER_TEXT);
   const [isOpen, setIsOpen] = useState(false);
@@ -65,6 +67,7 @@ export default function ChooseExerciseMenu({
   return (
     <div className="h-full w-full relative inline-block">
       <div
+        ref={ref}
         onBlur={(e) => {
           setTimeout(() => {
             e.target.innerText = e.target.innerText.trim() || PLACEHOLDER_TEXT;
@@ -72,7 +75,6 @@ export default function ChooseExerciseMenu({
           }, 100);
         }}
         onClick={(e) => {
-          
           if (!isItemsBeingFetched) {
             fetchExerciseList(
               "",
@@ -85,15 +87,13 @@ export default function ChooseExerciseMenu({
               .catch((e) => console.error(e))
               .finally(() => {
                 setIsItemsBeingFetched(false);
-                
+
                 setIsOpen(true);
               });
           }
 
           const target = e.target as HTMLDivElement;
-          if (target.innerText === PLACEHOLDER_TEXT) {
-            target.innerText = "";
-          }
+          target.innerText = "";
         }}
         onInput={onInput}
         className={`h-full w-full bg-gray-ogg-2 shadow-black/30 shadow-sm rounded-2xl font-inter 

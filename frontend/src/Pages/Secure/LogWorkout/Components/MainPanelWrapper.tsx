@@ -5,6 +5,7 @@ export type MainPanelRefContextType = {
   repWeightRef: RefObject<HTMLDivElement>;
   weightUnitRef: RefObject<HTMLDivElement>;
   repCountRef: RefObject<HTMLDivElement>;
+  chosenExerciseRef: RefObject<HTMLDivElement>;
 };
 export const MainPanelRefContext =
   createContext<MainPanelRefContextType | null>(null);
@@ -14,6 +15,9 @@ export default function MainPanelWrapper({
 }: {
   children: ReactNode;
 }) {
+  const chosenExerciseRef = useRef<HTMLDivElement>(
+    null
+  ) as RefObject<HTMLDivElement>;
   const setNumberDivRef = useRef<HTMLDivElement>(
     null
   ) as RefObject<HTMLDivElement>;
@@ -33,6 +37,7 @@ export default function MainPanelWrapper({
     repWeightRef,
     weightUnitRef,
     repCountRef,
+    chosenExerciseRef,
   };
 
   return (
