@@ -25,13 +25,10 @@ export default function MainPanel() {
   dates[0] = "Today"; // Set the first date to "Today"
 
   const [chosenExercise, setChosenExercise] = useState<string>("");
+  const [repWeightPlaceholder, setRepWeightPlaceholder] = useState<number>(0);
 
-  const {
-    setNumberDivRef,
-    repWeightRef,
-    weightUnitRef,
-    repCountRef,
-  } = useContext(MainPanelRefContext) as MainPanelRefContextType;
+  const { setNumberDivRef, repWeightRef, weightUnitRef, repCountRef } =
+    useContext(MainPanelRefContext) as MainPanelRefContextType;
   const [partialSums, setPartialSums] = useState<Map<string, WorkoutSetType>>(
     new Map()
   );
@@ -62,7 +59,10 @@ export default function MainPanel() {
       </div>
       <div className="min-h-14 w-full mb-4 cursor-pointer ">
         <ChooseExerciseMenu
-          itemSelectEffectCallback={(item) => setChosenExercise(item.trim())}
+          itemSelectEffectCallback={(item, weight) => {
+            setChosenExercise(item.trim());
+            setRepWeightPlaceholder(weight);
+          }}
         />
       </div>
       <div className="flex-row cursor-pointer justify-between items-center pl-1 flex w-full font-inter font-light text-2xl mb-4 ">
@@ -111,10 +111,14 @@ export default function MainPanel() {
             color="bg-blue-ogg-0"
           />
         </div>
-        <div className="min-h-11 w-1/6">
+        <div className={`min-h-11 w-1/6 ${repWeightPlaceholder === 0 && "italic"}`}>
           <MiniPanel
             ref={repWeightRef}
-            placeholderText="50"
+            placeholderText={
+              repWeightPlaceholder === 0
+                ? "50"
+                : repWeightPlaceholder.toString()
+            }
             color="bg-gray-ogg-2"
           />
         </div>

@@ -21,6 +21,17 @@ func GetByName(db *gorm.DB, name string) (*Exercise, error) {
 	return &exercise, nil
 }
 
+func GetAllByStartsWith(db *gorm.DB, startsWith string) ([]Exercise, error) {
+	var exercises []Exercise
+	if err := db.Where("LOWER(name) LIKE ?", startsWith+"%").Find(&exercises).Error; err != nil {
+		return nil, err
+	}
+	if len(exercises) == 0 {
+		return nil, gorm.ErrRecordNotFound
+	}
+	return exercises, nil
+}
+
 func GetByID(db *gorm.DB, id uint) (*Exercise, error) {
 	var exercise Exercise
 	if err := db.First(&exercise, "id = ?", id).Error; err != nil {

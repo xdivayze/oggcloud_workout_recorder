@@ -25,9 +25,12 @@ export function fetchExerciseList(
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const bodyJson = await response.json();
-    const exerciseNames = bodyJson.exerciseNames as string[];
-    if (!Array.isArray(exerciseNames)) {
-      throw new Error("Invalid response format: exercise_names is not an array");
+    const exerciseNames = new Map<string, number>(
+      Object.entries(bodyJson.exerciseNames)
+    );
+
+    if (!(exerciseNames instanceof Map)) {
+      throw new Error("Invalid response format: exerciseNames is not a Map");
     }
     return exerciseNames;
   });
