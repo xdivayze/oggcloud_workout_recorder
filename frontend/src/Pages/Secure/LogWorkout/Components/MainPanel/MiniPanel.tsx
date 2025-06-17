@@ -33,6 +33,9 @@ export default function MiniPanel({
         ref={ref}
         inputMode={numeric ? "numeric" : "text"}
         onClick={(e) => {
+          if (contentEditable) {
+            (e.target as HTMLDivElement).innerText = "";
+          }
           if (dropdownFeatures !== undefined) {
             e.preventDefault();
             setIsOpen(!isOpen);
@@ -44,7 +47,9 @@ export default function MiniPanel({
 
       <div
         className={`${
-          isOpen ? "opacity-100 translate-y-0 z-10" : "opacity-0 translate-y-2 z-[-10]"
+          isOpen
+            ? "opacity-100 translate-y-0 z-10"
+            : "opacity-0 translate-y-2 z-[-10]"
         } transition-all delay-25 ease-in-out w-full absolute  rounded-xl 
         shadow-lg font-inter font-light bg-gray-ogg-2 border border-gray-300  `}
       >
