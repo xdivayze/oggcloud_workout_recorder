@@ -72,10 +72,7 @@ export default function ChooseExerciseMenu({
           }, 100);
         }}
         onClick={(e) => {
-          const target = e.target as HTMLDivElement;
-          if (target.innerText === PLACEHOLDER_TEXT) {
-            target.innerText = "";
-          }
+          
           if (!isItemsBeingFetched) {
             fetchExerciseList(
               "",
@@ -91,6 +88,11 @@ export default function ChooseExerciseMenu({
                 
                 setIsOpen(true);
               });
+          }
+
+          const target = e.target as HTMLDivElement;
+          if (target.innerText === PLACEHOLDER_TEXT) {
+            target.innerText = "";
           }
         }}
         onInput={onInput}
