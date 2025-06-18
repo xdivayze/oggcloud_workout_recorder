@@ -8,6 +8,7 @@ import (
 	"backend/src/models/workout/session"
 	set_module "backend/src/models/workout/set"
 	"errors"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -26,6 +27,8 @@ func HandleLogWorkout(c *gin.Context) {
 		c.JSON(400, gin.H{"error": "No workout data provided"})
 		return
 	}
+
+	logWorkoutRequest.Date = logWorkoutRequest.Date.Truncate(24 * time.Hour) // Normalize date to the start of the day
 
 	retrievedSession, err := session.GetByUserIDAndDate(db.DB, user.ID, logWorkoutRequest.Date)
 	if err != nil {

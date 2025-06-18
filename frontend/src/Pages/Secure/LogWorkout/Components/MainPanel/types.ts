@@ -14,7 +14,7 @@ export const LogWorkoutRequestSchema = z.object({
   date: z
     .string()
     .refine((val) => !isNaN(Date.parse(val)), "Invalid date format")
-    .transform((val) => new Date(val)),
+    .transform((val) => new Date(val)), // Convert to ISO string
 });
 
 export type LogWorkoutRequestType = z.infer<typeof LogWorkoutRequestSchema>;

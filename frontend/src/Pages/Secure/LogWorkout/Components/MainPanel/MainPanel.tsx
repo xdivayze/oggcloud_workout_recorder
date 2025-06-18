@@ -53,7 +53,10 @@ export default function MainPanel() {
                 setPartialSums(new Map()); // Clear partial sums when date changes
               }
               if (item === "Today") {
-                setSelectedDate(new Date());
+                setSelectedDate(() => {
+                  const date = new Date();
+                  return new Date(dayjs(date).format("YYYY-MM-DD"));
+                }); // Reset to today's date at midnight
               } else {
                 setSelectedDate(new Date(item));
               }
