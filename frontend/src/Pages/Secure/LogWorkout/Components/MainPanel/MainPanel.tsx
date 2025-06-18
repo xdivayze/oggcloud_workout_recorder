@@ -19,7 +19,7 @@ import dayjs from "dayjs";
 export default function MainPanel() {
   const importedAuthContext = useContext(authContext);
 
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date(dayjs(new Date()).format("YYYY-MM-DD"))); // Initialize with today's date at midnight
 
   const dates = GenerateDateArray(25, 1); // Generate an array of dates for the last 6 weeks
   dates[0] = "Today"; // Set the first date to "Today"
