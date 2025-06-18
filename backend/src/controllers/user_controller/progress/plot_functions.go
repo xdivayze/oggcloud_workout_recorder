@@ -4,6 +4,7 @@ import (
 	"backend/src/db"
 	"backend/src/models/workout/session"
 	"backend/src/models/workout/set"
+	"time"
 
 	"github.com/xdivayze/oggcloud_workout_plotter/intraset_heatmap"
 )
@@ -19,7 +20,7 @@ func generatePlotData(sessions []session.Session, exerciseID uint) intraset_heat
 		}
 		tidiedSets := generateModelAppropriateSetSlice(tidiedSession, exerciseID)
 		modelSessions = append(modelSessions, intraset_heatmap.NewSession(tidiedSets,
-			tidiedSession.Date))
+			tidiedSession.Date.Truncate(24*time.Hour)))
 
 	}
 	return intraset_heatmap.Sessions(modelSessions)
@@ -30,7 +31,7 @@ func generateModelAppropriateSetSlice(tidiedSession session.Session, exerciseID 
 	// It returns a slice of intraset_heatmap.Set
 	var sets []*intraset_heatmap.Set
 	for _, set := range tidiedSession.Sets {
-		
+
 		db.DB.Model(&set).Association("Reps").Find(&set.Reps)
 		if len(set.Reps) == 0 {
 			continue // Skip sets with no repetitions
