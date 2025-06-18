@@ -31,4 +31,4 @@ DB_NAME
 
 POSTGRES_URI=postgresql://\${DB_USER}:\${DB_PASSWORD}@\${DB_HOST}:\${DB_PORT}/\${DB_NAME}
 
-DEV: boolean:toString()
+DEV: boolean::toString()
